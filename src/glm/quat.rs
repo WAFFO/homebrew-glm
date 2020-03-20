@@ -2,29 +2,21 @@ use std::fmt::{Display, Formatter, Error};
 
 use super::{NEAR_ZERO, Mat4, Vec3, Mat3};
 
-// note: layout is [ w, x, y, z]
-//              or [ w, i, j, k]
+// note: layout is [ x, y, z, w]
+//              or [ i, j, k, w]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Quat (pub(crate) [f32; 4]);
 
 
 impl Quat {
 
-    pub fn new(w: f32, x: f32, y: f32, z: f32) -> Quat { Quat ( [w, x, y, z] ) }
-    pub fn identity() -> Quat { Quat ( [1.0, 0.0, 0.0, 0.0] ) }
-    pub fn axis_of_rotation(axis: Vec3, angle: f32) -> Quat {
-        Quat([
-            (angle/2.0).cos(),
-            (angle/2.0).sin() * axis.x(),
-            (angle/2.0).sin() * axis.y(),
-            (angle/2.0).sin() * axis.z(),
-        ])
-    }
-    pub fn w(&self) -> f32 { self.0[0] }
-    pub fn x(&self) -> f32 { self.0[1] }
-    pub fn y(&self) -> f32 { self.0[2] }
-    pub fn z(&self) -> f32 { self.0[3] }
-    pub fn xyz(&self) -> Vec3 { Vec3([self.0[1], self.0[2], self.0[3]]) }
+    pub fn new(x: f32, y: f32, z: f32, w: f32) -> Quat { Quat ( [ x, y, z, w] ) }
+    pub fn identity() -> Quat { Quat ( [0.0, 0.0, 0.0, 1.0] ) }
+    pub fn x(&self) -> f32 { self.0[0] }
+    pub fn y(&self) -> f32 { self.0[1] }
+    pub fn z(&self) -> f32 { self.0[2] }
+    pub fn w(&self) -> f32 { self.0[3] }
+    pub fn xyz(&self) -> Vec3 { Vec3([self.0[0], self.0[1], self.0[2]]) }
     pub fn equals(&self, other: &Quat) -> bool {
         (self.x() - other.x()).abs() < NEAR_ZERO
         && (self.y() - other.y()).abs() < NEAR_ZERO
@@ -44,10 +36,10 @@ impl Quat {
     }
     pub fn conjugate(&self) -> Quat {
         Quat ( [
-             self.w(), // w
             -self.x(), // x
             -self.y(), // y
             -self.z(), // z
+             self.w(), // w
         ] )
     }
     pub fn inverse(&self) -> Quat {
@@ -99,28 +91,6 @@ impl Quat {
                       0.0,           0.0,           0.0, 1.0,
         ])
 
-//        m[0][0] = 1.0 - (yy + zz);
-//        m[1][0] = xy - wz;
-//        m[2][0] = xz + wy;
-//        m[3][0] = 0.0;
-//
-//        m[0][1] = xy + wz;
-//        m[1][1] = 1.0 - (xx + zz);
-//        m[2][1] = yz - wx;
-//        m[3][1] = 0.0;
-//
-//
-//        m[0][2] = xz - wy;
-//        m[1][2] = yz + wx;
-//        m[2][2] = 1.0 - (xx + yy);
-//        m[3][2] = 0.0;
-//
-//
-//        m[0][3] = 0;
-//        m[1][3] = 0;
-//        m[2][3] = 0;
-//        m[3][3] = 1;
-
     }
 
     pub fn rotate(&self, rotation: Quat) -> Quat {
@@ -157,10 +127,10 @@ impl Quat {
 
         // calculate to values
         Quat::new(
-            scale0 * self.w() + scale1 * to[0],
-            scale0 * self.x() + scale1 * to[1],
-            scale0 * self.y() + scale1 * to[2],
-            scale0 * self.z() + scale1 * to[3],
+            scale0 * self.x() + scale1 * to.x(),
+            scale0 * self.y() + scale1 * to.y(),
+            scale0 * self.z() + scale1 * to.z(),
+            scale0 * self.w() + scale1 * to.w(),
         )
     }
 
@@ -180,10 +150,10 @@ impl Quat {
 
         // calculate to values
         Quat::new(
-            scale0 * self.w() + scale1 * to[0],
-            scale0 * self.x() + scale1 * to[1],
-            scale0 * self.y() + scale1 * to[2],
-            scale0 * self.z() + scale1 * to[3],
+            scale0 * self.x() + scale1 * to.x(),
+            scale0 * self.y() + scale1 * to.y(),
+            scale0 * self.z() + scale1 * to.z(),
+            scale0 * self.w() + scale1 * to.w(),
         )
     }
 
@@ -247,7 +217,7 @@ impl Quat {
         // scale the axis to get the normalized quaternion
         // cos^2 t = ( 1 + cos (2t) ) / 2
         // w part is cosine of half the rotation angle
-        Quat::new((0.5 * (1.0 + cost)).sqrt(), tx, ty, tz)
+        Quat::new(tx, ty, tz, (0.5 * (1.0 + cost)).sqrt())
     }
 
     pub fn from_euler_ypr(yaw: f32, pitch: f32, roll: f32) -> Quat {
@@ -262,10 +232,10 @@ impl Quat {
         let spcy = sp * cy;
         let cpsy = cp * sy;
         Quat ([
-            sr * cpcy - cr * spsy,
             cr * spcy + sr * cpsy,
             cr * cpsy - sr * spcy,
             cr * cpcy + sr * spsy,
+            sr * cpcy - cr * spsy,
         ])
     }
 
@@ -275,10 +245,10 @@ impl Quat {
         let scale = (angle / 2.0).sin();
 
         Quat ([
-            (angle / 2.0).cos(),
             vec[0] * scale,
             vec[1] * scale,
             vec[2] * scale,
+            (angle / 2.0).cos(),
         ])
     }
 
@@ -325,10 +295,10 @@ impl std::ops::Mul<Quat> for Quat {
 
     fn mul(self, rhs: Quat) -> Quat {
         Quat ( [
-            self.w() * rhs.w() - self.x() * rhs.x() - self.y() * rhs.y() - self.z() * rhs.z(), // w
             self.x() * rhs.w() + self.w() * rhs.x() + self.y() * rhs.z() - self.z() * rhs.y(), // x
             self.y() * rhs.w() + self.w() * rhs.y() + self.z() * rhs.x() - self.x() * rhs.z(), // y
             self.z() * rhs.w() + self.w() * rhs.z() + self.x() * rhs.y() - self.y() * rhs.x(), // z
+            self.w() * rhs.w() - self.x() * rhs.x() - self.y() * rhs.y() - self.z() * rhs.z(), // w
         ] ).normalize()
     }
 }
@@ -352,26 +322,12 @@ impl std::ops::Mul<Vec3> for Quat {
     }
 }
 
-// // What is this??
-// impl std::ops::Mul<Vec3> for Quat {
-//     type Output = Quat;
-//
-//     fn mul(self, rhs: Vec3) -> Quat {
-//         Quat ( [
-//            -self.x() * rhs.x() - self.y() * rhs.y() - self.z() * rhs.z(), // w
-//             self.w() * rhs.x() + self.y() * rhs.z() - self.z() * rhs.y(), // x
-//             self.w() * rhs.y() + self.z() * rhs.x() - self.x() * rhs.z(), // y
-//             self.w() * rhs.z() + self.x() * rhs.y() - self.y() * rhs.x(), // z
-//         ] )
-//     }
-// }
-
 impl std::ops::Mul<f32> for Quat {
     type Output = Quat;
 
     fn mul(self, rhs: f32) -> Self::Output {
         // may not be a unit quaternion after this
-        Quat::new(self.w() * rhs, self.x() * rhs, self.y() * rhs, self.z() * rhs)
+        Quat::new(self.x() * rhs, self.y() * rhs, self.z() * rhs, self.w() * rhs)
     }
 }
 
@@ -435,10 +391,10 @@ impl From<Mat4> for Quat {
             let s: f32 = (tr + 1.0).sqrt();
             let si: f32 = 0.5 / s;
             Quat([
-                s / 2.0,
                 (m[6] - m[9]) * si,
                 (m[8] - m[2]) * si,
                 (m[1] - m[4]) * si,
+                s / 2.0,
             ])
         }
         // diagonal is negative
@@ -460,7 +416,7 @@ impl From<Mat4> for Quat {
             q[3] = (m[(j,k)] - m[(k,j)]) * s;
             q[j] = (m[(i,j)] + m[(j,i)]) * s;
             q[k] = (m[(i,k)] + m[(k,i)]) * s;
-            Quat([ q[3], q[0], q[1], q[2] ])
+            Quat([ q[0], q[1], q[2], q[3] ])
         }
     }
 }
@@ -476,7 +432,7 @@ impl From<Vec3> for Quat {
 //------------------------------------------------------------------------------------------------//
 impl Default for Quat {
     fn default() -> Self {
-        Quat([ 1.0, 0.0, 0.0, 0.0 ])
+        Quat::identity()
     }
 }
 

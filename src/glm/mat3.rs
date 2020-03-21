@@ -1,6 +1,16 @@
 
 use super::Vec3;
 
+/** # Mat3 - 3x3 Matrix <f32>
+
+Look at me, I'm describing things. What a time to be alive. What if this is really long? Like really really really really really really really really really really really really really really really really really really really really really really really really really really really really long?
+
+## What if I break it up?
+Look at me, I'm describing things. What a time to be alive. What if this is really long? Like really
+really really really really really really really really really really really really really really
+really really really really really really really really really really really really really long?
+*/
+
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Mat3 ( pub(crate) [f32; 9] );
 

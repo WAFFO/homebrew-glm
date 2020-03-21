@@ -1,18 +1,26 @@
 
-mod vec3;
-mod vec4;
-mod mat3;
-mod mat4;
-mod quat;
+pub(crate) mod vec3;
+pub(crate) mod vec4;
+pub(crate) mod mat3;
+pub(crate) mod mat4;
+pub(crate) mod quat;
 
-pub use self::vec3::Vec3;
-pub use self::vec4::Vec4;
-pub use self::mat3::Mat3;
-pub use self::mat4::Mat4;
-pub use self::quat::Quat;
+pub use vec3::Vec3;
+pub use vec4::Vec4;
+pub use mat3::Mat3;
+pub use mat4::Mat4;
+pub use quat::Quat;
 
 pub const NEAR_ZERO: f32 = 0.000001;
 pub const D_NEAR_ZERO: f64 = 0.000001;
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! assert_eq_float {
+    ($left:expr, $right:expr) => {
+        assert!(( $left - $right ).abs() < 0.000001);
+    }
+}
 
 pub fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
     Vec3::new(x, y, z)
@@ -52,16 +60,17 @@ pub fn perspective(aspect: f32, fov: f32, near: f32, far: f32) -> Mat4 {
     m
 }
 
+
 pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
     let zaxis: Vec3 = (pos - target).normalize();
-    let xaxis: Vec3 = up.cross(&target).normalize();
-    let yaxis: Vec3 = zaxis.cross(&xaxis).normalize();
+    let xaxis: Vec3 = up.cross(target).normalize();
+    let yaxis: Vec3 = zaxis.cross(xaxis).normalize();
 
     Mat4::new(
         Vec4::new(xaxis[0], yaxis[0], zaxis[0], 0.0),
         Vec4::new(yaxis[1], yaxis[1], zaxis[1], 0.0),
         Vec4::new(zaxis[2], yaxis[2], zaxis[2], 0.0),
-        Vec4::new(xaxis.dot(&pos) * -1.0, yaxis.dot(&pos) * -1.0, zaxis.dot(&pos) * -1.0, 1.0),
+        Vec4::new(xaxis.dot(pos) * -1.0, yaxis.dot(pos) * -1.0, zaxis.dot(pos) * -1.0, 1.0),
     )
 }
 

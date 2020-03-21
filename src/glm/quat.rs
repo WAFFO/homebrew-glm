@@ -2,8 +2,14 @@ use std::fmt::{Display, Formatter, Error};
 
 use super::{NEAR_ZERO, Mat4, Vec3, Mat3};
 
-// note: layout is [ x, y, z, w]
-//              or [ i, j, k, w]
+/** # Quat - Quaternion <f32>
+
+note: layout is [ x, y, z, w]
+             or [ i, j, k, w]
+*/
+
+//
+//
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Quat (pub(crate) [f32; 4]);
 
@@ -316,8 +322,8 @@ impl std::ops::Mul<Vec3> for Quat {
 
     fn mul(self, rhs: Vec3) -> Self::Output {
         let q_xyz: Vec3 = self.xyz();
-        let t: Vec3 = q_xyz.cross(&rhs) * 2.0;
-        let u: Vec3 = q_xyz.cross(&t);
+        let t: Vec3 = q_xyz.cross(rhs) * 2.0;
+        let u: Vec3 = q_xyz.cross(t);
         rhs + (t * self.w()) + u
     }
 }

@@ -1,6 +1,10 @@
 
 use super::{Vec4, Mat3};
 
+/** # Mat4 - 4x4 Matrix <f32>
+
+*/
+
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Mat4 ( pub(crate) [f32; 16] );
 

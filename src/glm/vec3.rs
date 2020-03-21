@@ -49,13 +49,13 @@ impl Vec3 {
     pub fn z(&self) -> f32 { self.0[2] }
 
     /// Receive the mutable reference for x
-    pub fn x_mut(&mut self) -> &mut f32 { &mut self[0] }
+    pub fn x_mut(&mut self) -> &mut f32 { &mut self.0[0] }
 
     /// Receive the mutable reference for y
-    pub fn y_mut(&mut self) -> &mut f32 { &mut self[1] }
+    pub fn y_mut(&mut self) -> &mut f32 { &mut self.0[1] }
 
     /// Receive the mutable reference for z
-    pub fn z_mut(&mut self) -> &mut f32 { &mut self[2] }
+    pub fn z_mut(&mut self) -> &mut f32 { &mut self.0[2] }
 
     /// Receive the *dot* product of this Vec3 and another Vec3
     ///
@@ -78,11 +78,13 @@ impl Vec3 {
     /// Receive the magnitude of this Vec3
     ///
     /// This function is analogous to `length()`
-    pub fn mag(&self) -> f32 { ( self.x() * self.x() + self.y() * self.y() + self.z() * self.z() ).sqrt() }
+    pub fn mag(&self) -> f32 { (
+        self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
+    ).sqrt() }
 
     /// Receive the length of this Vec3
     ///
-    /// This function is analogous to `mag()`
+    /// This function is equivalent to `mag()`
     pub fn length(&self) -> f32 { self.mag() }
 
     /// Receive a normalization of Vec3
@@ -102,9 +104,9 @@ impl Vec3 {
         }
     }
 
-    /// Receive a Vec3 bounded by a float
+    /// Receive a Vec3 bounded by a float, overflows to zero
     pub fn bound(&self, bound: f32) -> Vec3 {
-        self.clone() % bound
+        *self % bound
     }
 
     /// Receive a Vec3 that is perpendicular to this Vec3

@@ -5,11 +5,11 @@ pub(crate) mod mat3;
 pub(crate) mod mat4;
 pub(crate) mod quat;
 
-pub use vec3::Vec3;
-pub use vec4::Vec4;
-pub use mat3::Mat3;
-pub use mat4::Mat4;
-pub use quat::Quat;
+use vec3::Vec3;
+use vec4::Vec4;
+use mat3::Mat3;
+use mat4::Mat4;
+use quat::Quat;
 
 pub const NEAR_ZERO: f32 = 0.000001;
 pub const D_NEAR_ZERO: f64 = 0.000001;

@@ -75,18 +75,6 @@ impl Vec4 {
     pub fn dot(&self, other: &Vec4) -> f32 {
         self[0] * other[0] + self[1] * other[1] + self[2] * other[2] + self[3] * other[3]
     }
-    /// Note! Cross in 4 dimensions doesn't exist, this is treated as a Vec3, and the 4th component
-    /// is set to parameter w!
-    ///
-    /// This function is **not** commutative
-    pub fn cross(&self, other: &Vec4, w: f32) -> Vec4 {
-        Vec4 ( [
-            self[1] * other[2] - self[2] * other[1],
-            self[2] * other[0] - self[0] * other[2],
-            self[0] * other[1] - self[1] * other[0],
-            w,
-        ] )
-    }
 
     /// Receive the magnitude of this Vec4
     ///

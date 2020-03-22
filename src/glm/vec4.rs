@@ -117,7 +117,7 @@ impl Vec4 {
         }
     }
 
-    /// Receive a Vec4 bounded by a float, overflows to zero
+    /// Receive a Vec4 bounded by a float, overflows/underflows past the bound to zero
     pub fn bound(&self, bound: f32) -> Vec4 {
         *self % bound
     }

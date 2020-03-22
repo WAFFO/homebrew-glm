@@ -38,8 +38,30 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
     Mat4::new(col1, col2, col3, col4)
 }
 
-pub fn perspective(aspect: f32, fov: f32, near: f32, far: f32) -> Mat4 {
-    let xy_max = near * fov.to_radians();
+/// Receive a *Projection Matrix* that transforms vectors to the clip space
+///
+/// - `fovy`: field of view in *radians* along the y axis
+/// - `aspect`: aspect ratio of the view
+/// - `near`: minimum distance something is visible
+/// - `far`: maximum distance something is visible
+///
+/// ## Where is this typically used?
+///
+/// Consider this GLSL code:
+///
+/// ```glsl
+/// gl_Position = u_projection * view * v_position;
+/// ```
+///
+/// The projection matrix is typically the left most matrix, it transforms the result of the current
+/// vertex multiplied by the view matrix, into `gl_Position`. `gl_Position` is a special variable
+/// GLSL expects to be clip space coordinates.
+///
+/// ## GLM equivalent function
+///
+/// GLM documentation: https://glm.g-truc.net/0.9.4/api/a00151.html#ga283629a5ac7fb9037795435daf22560f
+pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
+    let xy_max = near * fovy;
 
     let depth = far - near;
     let q = -(far + near) / depth;
@@ -51,16 +73,34 @@ pub fn perspective(aspect: f32, fov: f32, near: f32, far: f32) -> Mat4 {
 
     let mut m = Mat4::zero();
 
-    m[0] =   w;
-    m[5] =   h;
-    m[10] =  q;
+    m[0] = w;
+    m[5] = h;
+    m[10] = q;
     m[11] = -1.0;
     m[14] = qn;
 
     m
 }
 
-
+/// Build a *Viewing Matrix* derived from an eye point, a reference point indicating the center of the scene, and an UP vector
+///
+/// - `pos`: eye point in world coordinates
+/// - `target`: reference point in world coordinates that will be in the center of the screen
+/// - `up`: which direction is *up* in your world, this is typically `Vec3::new(0.0, 1.0, 0.0)`
+///
+/// ## Where is this typically used?
+///
+/// Consider this GLSL code:
+///
+/// ```glsl
+/// gl_Position = u_projection * view * v_position;
+/// ```
+///
+/// The view matrix is typically used to multiply the current vertex being iterated on.
+///
+/// ## GLM equivalent function
+///
+/// GLM documentation: https://glm.g-truc.net/0.9.4/api/a00151.html#gae2dca3785b6d5796e876114af58a60a1
 pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
     let zaxis: Vec3 = (pos - target).normalize();
     let xaxis: Vec3 = up.cross(target).normalize();

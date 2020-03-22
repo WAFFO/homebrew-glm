@@ -15,7 +15,7 @@ Content 2.
 */
 
 #[macro_use]
-pub mod macros;
+mod macros;
 
 pub(crate) mod glm;
 

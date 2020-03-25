@@ -1,20 +1,49 @@
 
 use super::Vec3;
+use std::slice::SliceIndex;
 
 /** # Mat3 - 3x3 Matrix <f32>
 
-Look at me, I'm describing things. What a time to be alive. What if this is really long? Like really really really really really really really really really really really really really really really really really really really really really really really really really really really really long?
+ A 3x3 Matrix with 9 elements. Stored internally as `[f32; 9]`.
 
-## What if I break it up?
-Look at me, I'm describing things. What a time to be alive. What if this is really long? Like really
-really really really really really really really really really really really really really really
-really really really really really really really really really really really really really long?
+ #### Column Major
+
+ This means data is stored and retrieved by column, not row. You can retrieve by a tuple like so:
+
+ ```
+ # use homebrew_glm::Mat3;
+ # let my_matrix = Mat3::zero();
+ # let column: usize = 0;
+ # let row: usize = 0;
+ let value: f32 = my_matrix[(column, row)];
+ ```
+
+ or if you can do the math ahead of time and retreive by the index:
+
+ ```
+ # use homebrew_glm::Mat3;
+ # let my_matrix = Mat3::zero();
+ # let index: usize = 0;
+ let value: f32 = my_matrix[index];
+ ```
+
+ TODO: This behaviour is not very intuitive, index<usize> should return a slice instead so that `my_matrix[column][row]` is possible.
+
+ #### Matrix Multiplication
+
+ Matrix multiplication is **not** commutative, that means that `A*B ≠ B*A`.
+
+ If there is more than one product in a single line, ie `A*B*C`, the product on the far right is
+ considered to be evaluated first, ie `A*(B*C)`.
+
 */
 
 #[derive(Debug, Copy, Clone, Default, PartialEq)]
 pub struct Mat3 ( pub(crate) [f32; 9] );
 
 impl Mat3 {
+
+    /// Create a new Mat3 with three columns
     pub fn new(col1: Vec3, col2: Vec3, col3: Vec3) -> Mat3 {
         Mat3 ( [
             col1[0], col1[1], col1[2],
@@ -22,7 +51,11 @@ impl Mat3 {
             col3[0], col3[1], col3[2],
         ] )
     }
+
+    /// Create a Mat3 with all elements equal to zero
     pub fn zero() -> Mat3 { Mat3([0.0;9]) }
+
+    /// Create an 3x3 identity Matrix
     pub fn identity() -> Mat3 {
         Mat3 ( [
             1.0, 0.0, 0.0,
@@ -30,10 +63,23 @@ impl Mat3 {
             0.0, 0.0, 1.0,
         ] )
     }
+
+    /// Create a Mat3 from a 9 element array
     pub fn mat3(mat: [f32;9]) -> Mat3 { Mat3(mat) }
+
+    /// Receive a copy of the data as an array
+    ///
+    /// Can also use `.into()`
+    ///
+    /// For a reference use `.as_ref()` and for a mutable reference use `.as_mut()`
     pub fn data(&self) -> [f32;9] { self.0 }
-    pub fn data_ref(&self) -> &[f32;9] { &self.0 }
-    pub fn data_ref_mut(&mut self) -> &mut [f32;9] { &mut self.0 }
+
+    pub fn get(&self, col: usize, row: usize) -> &f32 {
+        &self[(col, row)]
+    }
+    pub fn get_mut(&mut self, col: usize, row: usize) -> &mut f32 {
+        &mut self[(col, row)]
+    }
 }
 
 impl std::ops::Index<usize> for Mat3 {
@@ -65,6 +111,8 @@ impl std::ops::IndexMut<(usize,usize)> for Mat3 {
 }
 
 impl From<Vec3> for Mat3 {
+
+    /// Converts a Vec3 into a Mat3 by placing the Vec3 components diagonally.
     fn from(f: Vec3) -> Self {
         Mat3 ( [
             f[0],  0.0,  0.0,
@@ -77,6 +125,10 @@ impl From<Vec3> for Mat3 {
 impl std::ops::Mul<Mat3> for Mat3 {
     type Output = Mat3;
 
+    /// Matrix multiplication is **not** commutative, that means that `A*B ≠ B*A`.
+    ///
+    /// If there is more than one product in a single line, ie `A*B*C`, the product on the far right is
+    /// considered to be evaluated first, ie `A*(B*C)`.
     fn mul(self, rhs: Mat3) -> Mat3 {
         let m1 = &self;
         let m2 = &rhs;
@@ -91,11 +143,35 @@ impl std::ops::Mul<Mat3> for Mat3 {
 impl std::ops::Mul<Vec3> for Mat3 {
     type Output = Vec3;
 
+    /// Matrix * Vector = Vector-transformed
     fn mul(self, rhs: Vec3) -> Vec3 {
         Vec3([
             rhs[0]*self[0] + rhs[1]*self[3] + rhs[2]*self[6],
             rhs[0]*self[1] + rhs[1]*self[4] + rhs[2]*self[7],
             rhs[0]*self[2] + rhs[1]*self[5] + rhs[2]*self[8],
         ])
+    }
+}
+
+impl Into<[f32; 9]> for Mat3 {
+    /// Receive a copy of the data as an array
+    ///
+    /// Can also use `.data()`
+    fn into(self) -> [f32; 9] {
+        self.0
+    }
+}
+
+impl AsRef<[f32; 9]> for Mat3 {
+    /// Receive a reference to the internal array
+    fn as_ref(&self) -> &[f32; 9] {
+        &self.0
+    }
+}
+
+impl AsMut<[f32; 9]> for Mat3 {
+    /// Receive a mutable reference to the internal array
+    fn as_mut(&mut self) -> &mut [f32; 9] {
+        &mut self.0
     }
 }

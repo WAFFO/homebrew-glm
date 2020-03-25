@@ -66,7 +66,7 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
 /// ```
 ///
 /// The projection matrix is typically the left most matrix, it transforms the result of the current
-/// vertex multiplied by the view matrix, into `gl_Position`.
+/// vertex multiplied by the [view](./fn.lookAt.html) matrix, into `gl_Position`.
 ///
 /// Note:`gl_Position` is a special variable GLSL expects to be clip space coordinates.
 ///
@@ -132,7 +132,7 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 
 /// Build a *Translation Matrix* that transforms vectors in the world space
 ///
-/// - `t`: Vec3 containing model world  position
+/// - `t`: [Vec3](./struct.Vec3.html) containing model world  position
 ///
 /// ## Where is this typically used?
 ///
@@ -144,7 +144,7 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 ///
 /// The translation matrix is often the left most matrix, that way it's the last matrix to be
 /// multiplied. Each matrix is in reference to the origin (0,0,0) and if we were to translate before
-/// rotating, we would rotate around the origin instead of in place.
+/// [rotating](./fn.rotate.html), we would rotate around the origin instead of in place.
 ///
 /// ## GLM equivalent function
 ///
@@ -160,7 +160,7 @@ pub fn translate(t: Vec3) -> Mat4 {
 
 /// Build a *Rotation Matrix* that transforms vectors in the world space
 ///
-/// - `q`: Quat containing model rotation
+/// - `q`: [Quat](./struct.Quat.html) containing model rotation
 ///
 /// ## Where is this typically used?
 ///
@@ -170,10 +170,10 @@ pub fn translate(t: Vec3) -> Mat4 {
 /// model = translation * rotation * scale;
 /// ```
 ///
-/// The rotation matrix is to the right of the translation matrix, so that we may rotate in place
+/// The rotation matrix is to the right of the [translation](./fn.translate.html) matrix, so that we may rotate in place
 /// around the origin (0,0,0) first. Unless you want the model to stretch along a certain axis no
 /// matter which way it's rotated, the rotation matrix should always come after (to the left) of the
-/// scale matrix.
+/// [scale](./fn.scale.html) matrix.
 ///
 /// ## GLM equivalent function
 ///
@@ -280,7 +280,7 @@ pub fn rotate_z(f: f32) -> Mat4 {
 ///
 /// The scale matrix should be the right most matrix, so that the model is scaled first, otherwise
 /// we're scaling other transformations. Unless you want the model to stretch along a certain axis
-/// no matter which way it's rotated, the scale matrix should always come first (the far right).
+/// no matter which way it's [rotated](./fn.rotate.html), the scale matrix should always come first (the far right).
 ///
 /// ## GLM equivalent function
 ///

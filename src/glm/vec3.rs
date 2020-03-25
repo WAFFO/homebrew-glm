@@ -5,9 +5,18 @@ use std::ops::Neg;
 
  A Vector with three elements, `x`, `y`, and `z`, stored internally as `[f32; 3]`.
 
+ #### Default
+
+ [Default](https://doc.rust-lang.org/nightly/core/default/trait.Default.html) is implemented for
+ ease of use with ECS libraries like [specs](https://docs.rs/specs/0.16.1/specs/) that require
+ components to implement Default.
+
+ [`Vec3::default()`](#method.default) is equivalent to [`Vec3::zero()`](#method.zero) and we
+ recommend using that function instead to make your code more explicit.
+
 */
 
-#[derive(Debug, Copy, Clone, Default, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3 ( pub(crate) [f32; 3] );
 
 impl Vec3 {
@@ -16,12 +25,12 @@ impl Vec3 {
 
     /// Create an additive identity Vec3
     ///
-    /// Equivalent to `Vec3::new(0.0, 0.0, 0.0)`
+    /// Equivalent to [`Vec3::new(0.0, 0.0, 0.0)`](#method.new)
     pub fn zero() -> Vec3 { Vec3 ( [0.0, 0.0, 0.0] ) }
 
     /// Create a multiplicative identity Vec3
     ///
-    /// Equivalent to `Vec3::new(1.0, 1.0, 1.0)`
+    /// Equivalent to [`Vec3::new(1.0, 1.0, 1.0)`](#method.new)
     pub fn one()  -> Vec3 { Vec3 ( [1.0, 1.0, 1.0] ) }
 
     /// Create a Vec3 with all the same values
@@ -77,14 +86,14 @@ impl Vec3 {
 
     /// Receive the magnitude of this Vec3
     ///
-    /// This function is analogous to `length()`
+    /// This function is analogous to [`length()`](#method.length)
     pub fn mag(&self) -> f32 { (
         self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
     ).sqrt() }
 
     /// Receive the length of this Vec3
     ///
-    /// This function is equivalent to `mag()`
+    /// This function is equivalent to [`mag()`](#method.mag)
     pub fn length(&self) -> f32 { self.mag() }
 
     /// Receive a normalization of Vec3
@@ -133,3 +142,12 @@ impl Vec3 {
 }
 
 vector_operations!(Vec3, { 0, 1, 2 } );
+
+impl Default for Vec3 {
+
+    /// Default for Vec3 is [`Vec3::zero()`](#method.zero). Consider using that function instead to
+    /// be more explicit.
+    fn default() -> Self {
+        Self::zero()
+    }
+}

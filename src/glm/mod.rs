@@ -50,7 +50,7 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
     Mat4::new(col1, col2, col3, col4)
 }
 
-/// Build a *Projection Matrix* that transforms vectors from eye space to the clip space
+/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space
 ///
 /// - `fovy`: field of view in *radians* along the y axis
 /// - `aspect`: aspect ratio of the view
@@ -95,12 +95,14 @@ pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
     m
 }
 
-/// Build a *Viewing Matrix* derived from an eye point, a reference point indicating the center of
+/// Build a *View Matrix* that transforms vertices from world space to eye space
+///
+/// The matrix is derived from an eye point, a reference point indicating the center of
 /// the scene, and an UP vector
 ///
 /// - `pos`: eye point in world coordinates
 /// - `target`: reference point in world coordinates that will be in the center of the screen
-/// - `up`: which direction is *up* in your world, this is typically `Vec3::new(0.0, 1.0, 0.0)`
+/// - `up`: which direction is *up* in your world, this is typically [`Vec3::new(0.0, 1.0, 0.0)`](#method.new)
 ///
 /// ## Where is this typically used?
 ///

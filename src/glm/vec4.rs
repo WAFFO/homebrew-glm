@@ -5,9 +5,18 @@ use super::Vec3;
 
  A Vector with four elements, `x`, `y`, 'z', and `w`, stored internally as `[f32; 4]`.
 
+ #### Default
+
+ [Default](https://doc.rust-lang.org/nightly/core/default/trait.Default.html) is implemented for
+ ease of use with ECS libraries like [specs](https://docs.rs/specs/0.16.1/specs/) that require
+ components to implement Default.
+
+ [`Vec4::default()`](#method.default) is equivalent to [`Vec4::zero()`](#method.zero) and we
+ recommend using that function instead to make your code more explicit.
+
 */
 
-#[derive(Debug, Copy, Clone, Default, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec4 ( pub(crate) [f32; 4] );
 
 impl Vec4 {
@@ -16,12 +25,12 @@ impl Vec4 {
 
     /// Create an additive identity Vec4
     ///
-    /// Equivalent to `Vec4::new(0.0, 0.0, 0.0, 0.0)`
+    /// Equivalent to [`Vec4::new(0.0, 0.0, 0.0, 0.0)`](#method.new)
     pub fn zero() -> Vec4 { Vec4 ( [0.0, 0.0, 0.0, 0.0] ) }
 
     /// Create a multiplicative identity Vec4
     ///
-    /// Equivalent to `Vec4::new(1.0, 1.0, 1.0, 1.0)`
+    /// Equivalent to [`Vec4::new(1.0, 1.0, 1.0, 1.0)`](#method.new)
     pub fn one()  -> Vec4 { Vec4 ( [1.0, 1.0, 1.0, 1.0] ) }
 
     /// Create a Vec4 with all the same values
@@ -78,14 +87,14 @@ impl Vec4 {
 
     /// Receive the magnitude of this Vec4
     ///
-    /// This function is equivalent to `length()`
+    /// This function is equivalent to [`length()`](#method.length)
     pub fn mag(&self) -> f32 { (
         self.x() * self.x() + self.y() * self.y() + self.z() * self.z() + self.w() * self.w()
     ).sqrt() }
 
     /// Receive the length of this Vec4
     ///
-    /// This function is equivalent to `mag()`
+    /// This function is equivalent to [`mag()`](#method.mag)
     pub fn length(&self) -> f32 { self.mag() }
 
     /// Receive a normalization of Vec3
@@ -121,3 +130,12 @@ impl From<Vec3> for Vec4 {
 }
 
 vector_operations!(Vec4, { 0, 1, 2, 3 });
+
+impl Default for Vec4 {
+
+    /// Default for Vec4 is [`Vec4::zero()`](#method.zero). Consider using that function instead to
+    /// be more explicit.
+    fn default() -> Self {
+        Self::zero()
+    }
+}

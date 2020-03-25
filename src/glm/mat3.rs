@@ -36,14 +36,23 @@ use std::slice::SliceIndex;
  If there is more than one product in a single line, ie `A*B*C`, the product on the far right is
  considered to be evaluated first, ie `A*(B*C)`.
 
+ #### Default
+
+ [Default](https://doc.rust-lang.org/nightly/core/default/trait.Default.html) is implemented for
+ ease of use with ECS libraries like [specs](https://docs.rs/specs/0.16.1/specs/) that require
+ components to implement Default.
+
+ [`Mat3::default()`](#method.default) is equivalent to [`Mat3::identity()`](#method.identity) and we
+ recommend using that function instead to make your code more explicit.
+
 */
 
-#[derive(Debug, Copy, Clone, Default, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Mat3 ( pub(crate) [f32; 9] );
 
 impl Mat3 {
 
-    /// Create a new Mat3 with three columns
+    /// Create a new Mat3 from three Vec3 columns
     pub fn new(col1: Vec3, col2: Vec3, col3: Vec3) -> Mat3 {
         Mat3 ( [
             col1[0], col1[1], col1[2],
@@ -54,6 +63,11 @@ impl Mat3 {
 
     /// Create a Mat3 with all elements equal to zero
     pub fn zero() -> Mat3 { Mat3([0.0;9]) }
+
+    /// Create an 3x3 identity Matrix
+    pub fn one() -> Mat3 {
+        Self::identity()
+    }
 
     /// Create an 3x3 identity Matrix
     pub fn identity() -> Mat3 {
@@ -69,9 +83,9 @@ impl Mat3 {
 
     /// Receive a copy of the data as an array
     ///
-    /// Can also use `.into()`
+    /// Can also use [`into()`](#method.into)
     ///
-    /// For a reference use `.as_ref()` and for a mutable reference use `.as_mut()`
+    /// For a reference use [`as_ref()`](#method.as_ref) and for a mutable reference use [`as_mut()`](#method.as_mut)
     pub fn data(&self) -> [f32;9] { self.0 }
 
     pub fn get(&self, col: usize, row: usize) -> &f32 {
@@ -127,8 +141,8 @@ impl std::ops::Mul<Mat3> for Mat3 {
 
     /// Matrix multiplication is **not** commutative, that means that `A*B ≠ B*A`.
     ///
-    /// If there is more than one product in a single line, ie `A*B*C`, the product on the far right is
-    /// considered to be evaluated first, ie `A*(B*C)`.
+    /// If there is more than one product in a single line, ie `A*B*C`, the product on the far right
+    /// is considered to be evaluated first, ie `A*(B*C)`.
     fn mul(self, rhs: Mat3) -> Mat3 {
         let m1 = &self;
         let m2 = &rhs;
@@ -156,7 +170,7 @@ impl std::ops::Mul<Vec3> for Mat3 {
 impl Into<[f32; 9]> for Mat3 {
     /// Receive a copy of the data as an array
     ///
-    /// Can also use `.data()`
+    /// Can also use [`data()`](#method.data)
     fn into(self) -> [f32; 9] {
         self.0
     }
@@ -173,5 +187,14 @@ impl AsMut<[f32; 9]> for Mat3 {
     /// Receive a mutable reference to the internal array
     fn as_mut(&mut self) -> &mut [f32; 9] {
         &mut self.0
+    }
+}
+
+impl Default for Mat3 {
+
+    /// Default for Mat3 is [`Mat3::identity()`](#method.identity). Consider using that function
+    /// instead to be more explicit.
+    fn default() -> Self {
+        Self::identity()
     }
 }

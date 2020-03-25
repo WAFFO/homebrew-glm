@@ -4,12 +4,12 @@ use super::{NEAR_ZERO, Mat4, Vec3, Mat3};
 
 /** # Quat - Quaternion <f32>
 
-note: layout is [ x, y, z, w]
-             or [ i, j, k, w]
+ Quaternions are four component vectors that represent rotations or orientations.
+
 */
 
-//
-//
+// note: layout is [ x, y, z, w]
+//              or [ i, j, k, w]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Quat (pub(crate) [f32; 4]);
 

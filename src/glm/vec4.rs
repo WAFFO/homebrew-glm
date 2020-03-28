@@ -3,7 +3,7 @@ use super::Vec3;
 
 /** # Vec4 - 4 Dimensional Vector <f32>
 
- A Vector with four elements, `x`, `y`, 'z', and `w`, stored internally as `[f32; 4]`.
+ A Vector with four elements, `x`, `y`, `z`, and `w`, stored internally as `[f32; 4]`.
 
  #### Default
 
@@ -43,13 +43,11 @@ impl Vec4 {
     pub fn vec4(vec: [f32;4]) -> Vec4 { Vec4(vec) }
 
     /// Receive a copy of the array Vec4 represents
+    ///
+    /// Can also use [`into()`](#method.into)
+    ///
+    /// For a reference use [`as_ref()`](#method.as_ref) and for a mutable reference use [`as_mut()`](#method.as_mut)
     pub fn data(&self) -> [f32;4] { self.0 }
-
-    /// Receive a reference to the array within Vec4
-    pub fn data_ref(&self) -> &[f32;4] { &self.0 }
-
-    /// Receive a mutable reference to the array within Vec4
-    pub fn data_ref_mut(&mut self) -> &mut [f32;4] { &mut self.0 }
 
     /// Receive the x value
     pub fn x(&self) -> f32 { self.0[0] }
@@ -102,7 +100,7 @@ impl Vec4 {
     /// ```rust
     /// # use homebrew_glm::{assert_eq_float, Vec4};
     /// let v = Vec4::new(1.0, 2.0, -0.5, 0.1).normalize();
-    /// assert_eq_float!(1.0, v.length())
+    /// assert_eq_float!(1.0, v.length());
     /// ```
     pub fn normalize(&self) -> Vec4 {
         let mag = self.mag();
@@ -137,5 +135,28 @@ impl Default for Vec4 {
     /// be more explicit.
     fn default() -> Self {
         Self::zero()
+    }
+}
+
+impl Into<[f32; 4]> for Vec4 {
+    /// Receive a copy of the data as an array
+    ///
+    /// Can also use [`data()`](#method.data)
+    fn into(self) -> [f32; 4] {
+        self.0
+    }
+}
+
+impl AsRef<[f32; 4]> for Vec4 {
+    /// Receive a reference to the internal array
+    fn as_ref(&self) -> &[f32; 4] {
+        &self.0
+    }
+}
+
+impl AsMut<[f32; 4]> for Vec4 {
+    /// Receive a mutable reference to the internal array
+    fn as_mut(&mut self) -> &mut [f32; 4] {
+        &mut self.0
     }
 }

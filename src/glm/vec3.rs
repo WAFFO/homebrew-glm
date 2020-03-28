@@ -40,13 +40,11 @@ impl Vec3 {
     pub fn vec3(vec: [f32;3]) -> Vec3 { Vec3(vec) }
 
     /// Receive a copy of the array Vec3 represents
+    ///
+    /// Can also use [`into()`](#method.into)
+    ///
+    /// For a reference use [`as_ref()`](#method.as_ref) and for a mutable reference use [`as_mut()`](#method.as_mut)
     pub fn data(&self) -> [f32;3] { self.0 }
-
-    /// Receive a reference to the array within Vec3
-    pub fn data_ref(&self) -> &[f32;3] { &self.0 }
-
-    /// Receive a mutable reference to the array within Vec3
-    pub fn data_ref_mut(&mut self) -> &mut [f32;3] { &mut self.0 }
 
     /// Receive the x value
     pub fn x(&self) -> f32 { self.0[0] }
@@ -101,7 +99,7 @@ impl Vec3 {
     /// ```rust
     /// # use homebrew_glm::{Vec3, assert_eq_float};
     /// let v = Vec3::new(1.0, 2.0, -0.5).normalize();
-    /// assert_eq_float!(1.0, v.length())
+    /// assert_eq_float!(1.0, v.length());
     /// ```
     pub fn normalize(&self) -> Vec3 {
         let mag = self.mag();
@@ -149,5 +147,28 @@ impl Default for Vec3 {
     /// be more explicit.
     fn default() -> Self {
         Self::zero()
+    }
+}
+
+impl Into<[f32; 3]> for Vec3 {
+    /// Receive a copy of the data as an array
+    ///
+    /// Can also use [`data()`](#method.data)
+    fn into(self) -> [f32; 3] {
+        self.0
+    }
+}
+
+impl AsRef<[f32; 3]> for Vec3 {
+    /// Receive a reference to the internal array
+    fn as_ref(&self) -> &[f32; 3] {
+        &self.0
+    }
+}
+
+impl AsMut<[f32; 3]> for Vec3 {
+    /// Receive a mutable reference to the internal array
+    fn as_mut(&mut self) -> &mut [f32; 3] {
+        &mut self.0
     }
 }

@@ -1,5 +1,6 @@
 
 use super::Vec3;
+use std::fmt::{Display, Formatter, Error};
 
 /** # Vec4 - 4 Dimensional Vector <f32>
 
@@ -75,6 +76,15 @@ impl Vec4 {
 
     /// Receive a Vec3 made up of the x, y, z components
     pub fn xyz(&self) -> Vec3 { Vec3([self[0], self[1], self[2]]) }
+
+    /// Test if this Vec4 is equals to another Vec4 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    pub fn equals(&self, other: Vec4) -> bool {
+        use std::f32::EPSILON;
+        (self.x() - other.x()).abs() <= EPSILON
+            && (self.y() - other.y()).abs() <= EPSILON
+            && (self.z() - other.z()).abs() <= EPSILON
+            && (self.w() - other.w()).abs() <= EPSILON
+    }
 
     /// Receive the *dot* product of this Vec4 and another Vec4
     ///
@@ -158,5 +168,11 @@ impl AsMut<[f32; 4]> for Vec4 {
     /// Receive a mutable reference to the internal array
     fn as_mut(&mut self) -> &mut [f32; 4] {
         &mut self.0
+    }
+}
+
+impl Display for Vec4 {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "<{}, {}, {}, {}>", self.x(), self.y(), self.z(), self.w())
     }
 }

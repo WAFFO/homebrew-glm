@@ -1,6 +1,4 @@
-
 use super::Vec3;
-use std::slice::SliceIndex;
 
 /** # Mat3 - 3x3 Matrix <f32>
 
@@ -33,8 +31,9 @@ use std::slice::SliceIndex;
 
  Matrix multiplication is **not** commutative, that means that `A*B ≠ B*A`.
 
- If there is more than one product in a single line, ie `A*B*C`, the product on the far right is
- considered to be evaluated first, ie `A*(B*C)`.
+ For example, given a product of multiple matrices that each represent a transformation, such as
+ `M = A * B * C`. When you apply this transformation product to a Vec4, `M * V`, you can consider
+ the transformations on the right `C` to be applied first, and the left `A` last.
 
  #### Default
 
@@ -93,6 +92,17 @@ impl Mat3 {
     }
     pub fn get_mut(&mut self, col: usize, row: usize) -> &mut f32 {
         &mut self[(col, row)]
+    }
+
+    /// Test if this Mat3 is equals to another Mat3 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    pub fn equals(&self, other: Mat3) -> bool {
+        use std::f32::EPSILON;
+        for i in 0..9 {
+            if (self[i] - other[i]).abs() > EPSILON {
+                return false
+            }
+        }
+        true
     }
 }
 

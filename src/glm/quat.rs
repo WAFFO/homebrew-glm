@@ -6,6 +6,24 @@ use super::{NEAR_ZERO, Mat4, Vec3, Mat3};
 
  Quaternions are four component vectors that represent rotations or orientations.
 
+ Quat will at all times try stay a unit quaternion, the exception to this are if you multiply
+ or divide a quaternion, it will no longer be a unit quaternion.
+
+ ## How to use Quaternions
+
+ There are lots of videos about the math behind Quaternions, but I've found much less resources on
+ how to actually *use* them. This particular fact has always bothered me so I'd like to explain how
+ use them here to the best of my ability.
+
+ #### Creating a Quaternion
+
+ The most common way to create a Quaternion and probably the easiest way to think of Quaternions is
+ with [`Quat::from_angle_axis(angle: f32, axis: Vec3)`](#method.from_angle_axis). Where `axis` is a
+ unit [`Vec3`](struct.Vec3.html) representing the axis of rotation, and angle is the rotation around
+ `axis` in radians. This creates a `Quat` that represents that specific orientation.
+
+ // code snippet?
+
 */
 
 // note: layout is [ x, y, z, w]
@@ -24,10 +42,11 @@ impl Quat {
     pub fn w(&self) -> f32 { self.0[3] }
     pub fn xyz(&self) -> Vec3 { Vec3([self.0[0], self.0[1], self.0[2]]) }
     pub fn equals(&self, other: &Quat) -> bool {
-        (self.x() - other.x()).abs() < NEAR_ZERO
-        && (self.y() - other.y()).abs() < NEAR_ZERO
-        && (self.z() - other.z()).abs() < NEAR_ZERO
-        && (self.w() - other.w()).abs() < NEAR_ZERO
+        use std::f32::EPSILON;
+        (self.x() - other.x()).abs() < EPSILON
+            && (self.y() - other.y()).abs() < EPSILON
+            && (self.z() - other.z()).abs() < EPSILON
+            && (self.w() - other.w()).abs() < EPSILON
     }
     pub fn mag(&self) -> f32 { ( self[0].powi(2) + self[1].powi(2) + self[2].powi(2) + self[3].powi(2) ).sqrt() }
     pub fn length(&self) -> f32 { self.mag() }
@@ -163,7 +182,18 @@ impl Quat {
         )
     }
 
-    // create a rotation from one axis to another. These must be unit vectors
+    /// Create a rotation from one axis to another. Both `from` and `two` must be unit vectors!
+    ///
+    /// This resulting quaternion represents the rotation necessary to rotate the `from` Vec3 to the
+    /// `to` Vec3.
+    ///
+    /// ```
+    /// # use homebrew_glm::{Vec3, Quat};
+    /// let from = Vec3::new(1.0, 0.0, 0.0);
+    /// let to = Vec3::new(0.0, 1.0, 1.0).normalize();
+    /// let rotation = Quat::from_two_axis(from, to);
+    /// assert!(to.equals(rotation * from));
+    /// ```
     pub fn from_two_axis(from: Vec3, to: Vec3) -> Quat {
         let mut tx: f32;
         let mut ty: f32;
@@ -226,6 +256,7 @@ impl Quat {
         Quat::new(tx, ty, tz, (0.5 * (1.0 + cost)).sqrt())
     }
 
+    /// TODO: Change from yaw, pitch, roll to rotate_x, rotate_y, rotate_z (this is not in respect to current order)
     pub fn from_euler_ypr(yaw: f32, pitch: f32, roll: f32) -> Quat {
         let cr = (roll/2.0).cos();
         let cp = (pitch/2.0).cos();
@@ -246,14 +277,14 @@ impl Quat {
     }
 
     /// vec must be normalized
-    pub fn from_angle_axis(angle: f32, vec: Vec3) -> Quat {
+    pub fn from_angle_axis(angle: f32, axis: Vec3) -> Quat {
         // scalar
         let scale = (angle / 2.0).sin();
 
         Quat ([
-            vec[0] * scale,
-            vec[1] * scale,
-            vec[2] * scale,
+            axis[0] * scale,
+            axis[1] * scale,
+            axis[2] * scale,
             (angle / 2.0).cos(),
         ])
     }

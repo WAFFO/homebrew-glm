@@ -1,5 +1,5 @@
 use crate::NEAR_ZERO;
-use std::ops::Neg;
+use std::fmt::{Display, Formatter, Error};
 
 /** # Vec3 - 3 Dimensional Vector <f32>
 
@@ -64,6 +64,14 @@ impl Vec3 {
     /// Receive the mutable reference for z
     pub fn z_mut(&mut self) -> &mut f32 { &mut self.0[2] }
 
+    /// Test if this Vec3 is equals to another Vec3 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    pub fn equals(&self, other: Vec3) -> bool {
+        use std::f32::EPSILON;
+        (self.x() - other.x()).abs() <= EPSILON
+            && (self.y() - other.y()).abs() <= EPSILON
+            && (self.z() - other.z()).abs() <= EPSILON
+    }
+
     /// Receive the *dot* product of this Vec3 and another Vec3
     ///
     /// This function is commutative
@@ -84,7 +92,7 @@ impl Vec3 {
 
     /// Receive the magnitude of this Vec3
     ///
-    /// This function is analogous to [`length()`](#method.length)
+    /// This function is equivalent to [`length()`](#method.length)
     pub fn mag(&self) -> f32 { (
         self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
     ).sqrt() }
@@ -170,5 +178,11 @@ impl AsMut<[f32; 3]> for Vec3 {
     /// Receive a mutable reference to the internal array
     fn as_mut(&mut self) -> &mut [f32; 3] {
         &mut self.0
+    }
+}
+
+impl Display for Vec3 {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "<{}, {}, {}>", self.x(), self.y(), self.z())
     }
 }

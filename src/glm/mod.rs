@@ -18,7 +18,7 @@ pub const D_NEAR_ZERO: f64 = 0.000001;
 #[macro_export]
 macro_rules! assert_eq_float {
     ($left:expr, $right:expr) => {
-        assert!(( $left - $right ).abs() < 0.000001);
+        assert!(( $left - $right ).abs() < std::f32::EPSILON);
     }
 }
 
@@ -84,15 +84,12 @@ pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
     let w = w / aspect;
     let h = 2.0 * near / xy_max;
 
-    let mut m = Mat4::zero();
-
-    m[0] = w;
-    m[5] = h;
-    m[10] = q;
-    m[11] = -1.0;
-    m[14] = qn;
-
-    m
+    Mat4::mat4([
+        w, 0.0, 0.0, 0.0,
+        0.0, h, 0.0, 0.0,
+        0.0, 0.0, q, -1.0,
+        0.0, 0.0, qn, 0.0,
+    ])
 }
 
 /// Build a *View Matrix* that transforms vertices from world space to eye space
@@ -124,12 +121,12 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
     let xaxis: Vec3 = up.cross(target).normalize();
     let yaxis: Vec3 = zaxis.cross(xaxis).normalize();
 
-    Mat4::new(
-        Vec4::new(xaxis[0], yaxis[0], zaxis[0], 0.0),
-        Vec4::new(yaxis[1], yaxis[1], zaxis[1], 0.0),
-        Vec4::new(zaxis[2], yaxis[2], zaxis[2], 0.0),
-        Vec4::new(xaxis.dot(pos) * -1.0, yaxis.dot(pos) * -1.0, zaxis.dot(pos) * -1.0, 1.0),
-    )
+    Mat4::mat4([
+        xaxis[0], yaxis[0], zaxis[0], 0.0,
+        yaxis[1], yaxis[1], zaxis[1], 0.0,
+        zaxis[2], yaxis[2], zaxis[2], 0.0,
+        xaxis.dot(pos) * -1.0, yaxis.dot(pos) * -1.0, zaxis.dot(pos) * -1.0, 1.0,
+    ])
 }
 
 /// Build a *Translation Matrix* that transforms vectors in the world space
@@ -144,15 +141,35 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 /// model = translation * rotation * scale;
 /// ```
 ///
-/// The translation matrix is often the left most matrix, that way it's the last matrix to be
-/// multiplied. Each matrix is in reference to the origin (0,0,0) and if we were to translate before
-/// [rotating](./fn.rotate.html), we would rotate around the origin instead of in place.
+/// The translation matrix is often the left most matrix. Matrix mulitiplication is **not**
+/// commutative, you can think of the translation transformation happening last. Each matrix is in
+/// reference to the origin (0,0,0) and if we were to translate before [rotating](./fn.rotate.html),
+/// we would rotate around the origin instead of in place.
+///
+/// ## Example
+///
+/// In the code snippet below, we are translating a vector ...
+///
+/// ```
+/// # use homebrew_glm::{translate, Vec3, Vec4};
+/// let vec = Vec4::new(2.0, 2.0, 2.0, 1.0);
+/// let translate = translate(Vec3::new(1.0, -2.0, 0.5));
+/// let expected = Vec4::new(3.0, 0.0, 2.5, 1.0);
+/// println!("result: {}, expected: {}", translate * vec, expected);
+/// assert!(expected.equals( translate * vec ));
+/// ```
+///
+/// Note: You may have noticed that unlike for [`rotate`](./fn.rotate.html) or [`scale`](./fn.scale.html)
+/// or the other axis rotation functions, the `vec` we set has a fourth component equal to `1.0`
+/// as opposed to `0.0`. Usually [`translate`](#) is used in the context of building a model matrix,
+/// where it's on the far left and affects the other matrices that have `1.0` in the fourth column
+/// and fourth row.
 ///
 /// ## GLM equivalent function
 ///
 /// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga8925161ecc1767957900c5ca8b922dc4](https://glm.g-truc.net/0.9.4/api/a00151.html#ga8925161ecc1767957900c5ca8b922dc4)
 pub fn translate(t: Vec3) -> Mat4 {
-    Mat4([
+    Mat4::mat4([
         1.0,  0.0,  0.0, 0.0,
         0.0,  1.0,  0.0, 0.0,
         0.0,  0.0,  1.0, 0.0,
@@ -172,10 +189,25 @@ pub fn translate(t: Vec3) -> Mat4 {
 /// model = translation * rotation * scale;
 /// ```
 ///
-/// The rotation matrix is to the right of the [translation](./fn.translate.html) matrix, so that we may rotate in place
-/// around the origin (0,0,0) first. Unless you want the model to stretch along a certain axis no
-/// matter which way it's rotated, the rotation matrix should always come after (to the left) of the
-/// [scale](./fn.scale.html) matrix.
+/// The rotation matrix is to the right of the [translation](./fn.translate.html) matrix, so that we
+/// may rotate in place around the origin (0,0,0) before we translate. Unless you want the model to
+/// stretch along a certain axis no matter which way it's rotated, the rotation matrix should always
+/// come after (to the left) of the [scale](./fn.scale.html) matrix.
+///
+/// ## Example
+///
+/// In the code snippet below, we are rotating a vector that is pointing in the positive Z direction
+/// a quater turn counter clockwise around an axis-vector pointing in the negative X and positive Y
+/// direction. The expected resulting vector is pointing in the positive X and positive Y direction.
+///
+/// ```
+/// # use homebrew_glm::{rotate, Vec3, Vec4, Quat};
+/// # use std::f32::consts::PI;
+/// let vec = Vec4::new(0.0, 0.0, 1.0, 0.0);
+/// let rotation = rotate(Quat::from_angle_axis(PI/2.0, Vec3::new(-1.0, 1.0, 0.0).normalize()));
+/// let expected = Vec4::new(1.0, 1.0, 0.0, 0.0).normalize();
+/// assert!(expected.equals( rotation * vec ));
+/// ```
 ///
 /// ## GLM equivalent function
 ///
@@ -200,14 +232,29 @@ pub fn rotate(q: Quat) -> Mat4 {
 /// For example, something rotated about the X axis 90 degrees clockwise and then rotated around
 /// the Z axis 180 degrees, is different from the same rotations in opposite order.
 ///
+/// ## Example
+///
+/// In the code snippet below, we are rotating a vector that is pointing in the positive Z direction
+/// a quater turn counter clockwise around the X axis. The expected resulting vector is pointing in
+/// the negative Y direction.
+///
+/// ```
+/// # use homebrew_glm::{rotate_x, Vec4};
+/// # use std::f32::consts::PI;
+/// let vec = Vec4::new(0.0, 0.0, 1.0, 0.0);
+/// let rotation = rotate_x(PI/2.0);
+/// let expected = Vec4::new(0.0, -1.0, 0.0, 0.0);
+/// assert!(expected.equals( rotation * vec ));
+/// ```
+///
 /// ## GLM equivalent function
 ///
 /// GLM documentation: [https://glm.g-truc.net/0.9.3/api/a00199.html#gaaadca0c077515d56955f3c662a3a3c7f](https://glm.g-truc.net/0.9.3/api/a00199.html#gaaadca0c077515d56955f3c662a3a3c7f)
 pub fn rotate_x(f: f32) -> Mat4 {
-    Mat4([
+    Mat4::mat4([
         1.0, 0.0, 0.0, 0.0,
-        0.0, f.cos(), -f.sin(), 0.0,
-        0.0, f.sin(), f.cos(), 0.0,
+        0.0, f.cos(), f.sin(), 0.0,
+        0.0, -f.sin(), f.cos(), 0.0,
         0.0, 0.0, 0.0, 1.0,
     ])
 }
@@ -228,11 +275,26 @@ pub fn rotate_x(f: f32) -> Mat4 {
 /// For example, something rotated about the X axis 90 degrees clockwise and then rotated around
 /// the Z axis 180 degrees, is different from the same rotations in opposite order.
 ///
+/// ## Example
+///
+/// In the code snippet below, we are rotating a vector that is pointing in the positive Z direction
+/// a quater turn counter clockwise around the Y axis. The expected resulting vector is pointing in
+/// the positive X direction.
+///
+/// ```
+/// # use homebrew_glm::{rotate_y, Vec4};
+/// # use std::f32::consts::PI;
+/// let vec = Vec4::new(0.0, 0.0, 1.0, 0.0);
+/// let rotation = rotate_y(PI/2.0);
+/// let expected = Vec4::new(1.0, 0.0, 0.0, 0.0);
+/// assert!(expected.equals( rotation * vec ));
+/// ```
+///
 /// ## GLM equivalent function
 ///
 /// GLM documentation: [https://glm.g-truc.net/0.9.3/api/a00199.html#gacffa0ae7f32f4e2ee7bc1dc0ed290d45](https://glm.g-truc.net/0.9.3/api/a00199.html#gacffa0ae7f32f4e2ee7bc1dc0ed290d45)
 pub fn rotate_y(f: f32) -> Mat4 {
-    Mat4([
+    Mat4::mat4([
         f.cos(), 0.0, -f.sin(), 0.0,
         0.0, 1.0, 0.0, 0.0,
         f.sin(), 0.0, f.cos(), 0.0,
@@ -256,13 +318,28 @@ pub fn rotate_y(f: f32) -> Mat4 {
 /// For example, something rotated about the X axis 90 degrees clockwise and then rotated around
 /// the Z axis 180 degrees, is different from the same rotations in opposite order.
 ///
+/// ## Example
+///
+/// In the code snippet below, we are rotating a vector that is pointing in the positive X direction
+/// a quater turn counter clockwise around the Z axis. The expected resulting vector is pointing in
+/// the positive Y direction.
+///
+/// ```
+/// # use homebrew_glm::{rotate_z, Vec4};
+/// # use std::f32::consts::PI;
+/// let vec = Vec4::new(1.0, 0.0, 0.0, 0.0);
+/// let rotation = rotate_z(PI/2.0);
+/// let expected = Vec4::new(0.0, 1.0, 0.0, 0.0);
+/// assert!(expected.equals( rotation * vec ));
+/// ```
+///
 /// ## GLM equivalent function
 ///
 /// GLM documentation: [https://glm.g-truc.net/0.9.3/api/a00199.html#ga105c77751b4ab56c491334655751e0af](https://glm.g-truc.net/0.9.3/api/a00199.html#ga105c77751b4ab56c491334655751e0af)
 pub fn rotate_z(f: f32) -> Mat4 {
-    Mat4([
-        f.cos(), -f.sin(), 0.0, 0.0,
-        f.sin(), f.cos(), 0.0, 0.0,
+    Mat4::mat4([
+        f.cos(), f.sin(), 0.0, 0.0,
+        -f.sin(), f.cos(), 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0,
     ])
@@ -282,13 +359,26 @@ pub fn rotate_z(f: f32) -> Mat4 {
 ///
 /// The scale matrix should be the right most matrix, so that the model is scaled first, otherwise
 /// we're scaling other transformations. Unless you want the model to stretch along a certain axis
-/// no matter which way it's [rotated](./fn.rotate.html), the scale matrix should always come first (the far right).
+/// no matter which way it's [rotated](./fn.rotate.html), the scale matrix should always come first
+/// (the far right).
+///
+/// ## Example
+///
+/// In the code snippet below, we are scaling a vector ...
+///
+/// ```
+/// # use homebrew_glm::{scale, Vec3, Vec4};
+/// let vec = Vec4::new(2.0, 2.0, 2.0, 0.0);
+/// let scale = scale(Vec3::new(1.0, -2.0, 0.5));
+/// let expected = Vec4::new(2.0, -4.0, 1.0, 0.0);
+/// assert!(expected.equals( scale * vec ));
+/// ```
 ///
 /// ## GLM equivalent function
 ///
 /// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga223e08009f1cab54651200b81e91981c](https://glm.g-truc.net/0.9.4/api/a00151.html#ga223e08009f1cab54651200b81e91981c)
 pub fn scale(s: Vec3) -> Mat4 {
-    Mat4([
+    Mat4::mat4([
         s[0],  0.0,  0.0, 0.0,
         0.0, s[1],  0.0, 0.0,
         0.0,  0.0, s[2], 0.0,

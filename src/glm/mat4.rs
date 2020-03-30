@@ -32,8 +32,9 @@ use super::{Vec4, Mat3};
 
  Matrix multiplication is **not** commutative, that means that `A*B ≠ B*A`.
 
- If there is more than one product in a single line, ie `A*B*C`, the product on the far right is
- considered to be evaluated first, ie `A*(B*C)`.
+ For example, given a product of multiple matrices that each represent a transformation, such as
+ `M = A * B * C`. When you apply this transformation product to a Vec4, `M * V`, you can consider
+ the transformations on the right `C` to be applied first, and the left `A` last.
 
  #### Default
 
@@ -94,6 +95,17 @@ impl Mat4 {
     }
     pub fn get_mut(&mut self, col: usize, row: usize) -> &mut f32 {
         &mut self[(col, row)]
+    }
+
+    /// Test if this Mat4 is equals to another Mat4 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    pub fn equals(&self, other: Mat4) -> bool {
+        use std::f32::EPSILON;
+        for i in 0..16 {
+            if (self[i] - other[i]).abs() > EPSILON {
+                return false
+            }
+        }
+        true
     }
 }
 

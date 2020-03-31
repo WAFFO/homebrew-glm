@@ -95,7 +95,7 @@ pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
 /// Build a *View Matrix* that transforms vertices from world space to eye space
 ///
 /// The matrix is derived from an eye point, a reference point indicating the center of
-/// the scene, and an UP vector
+/// the scene, and an UP vector.
 ///
 /// - `pos`: eye point in world coordinates
 /// - `target`: reference point in world coordinates that will be in the center of the screen
@@ -148,22 +148,16 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are translating a vector ...
+/// In the code snippet below, we are translating a vector, which really is equivalent to adding a
+/// vectors components. This is how we set the position of points in the world space.
 ///
 /// ```
 /// # use homebrew_glm::{translate, Vec3, Vec4};
 /// let vec = Vec4::new(2.0, 2.0, 2.0, 1.0);
 /// let translate = translate(Vec3::new(1.0, -2.0, 0.5));
 /// let expected = Vec4::new(3.0, 0.0, 2.5, 1.0);
-/// println!("result: {}, expected: {}", translate * vec, expected);
 /// assert!(expected.equals( translate * vec ));
 /// ```
-///
-/// Note: You may have noticed that unlike for [`rotate`](./fn.rotate.html) or [`scale`](./fn.scale.html)
-/// or the other axis rotation functions, the `vec` we set has a fourth component equal to `1.0`
-/// as opposed to `0.0`. Usually [`translate`](#) is used in the context of building a model matrix,
-/// where it's on the far left and affects the other matrices that have `1.0` in the fourth column
-/// and fourth row.
 ///
 /// ## GLM equivalent function
 ///
@@ -364,7 +358,8 @@ pub fn rotate_z(f: f32) -> Mat4 {
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are scaling a vector ...
+/// In the code snippet below, we are scaling a vector by it's individual components. It's
+/// equivalent to multiplying each component by a different scalar.
 ///
 /// ```
 /// # use homebrew_glm::{scale, Vec3, Vec4};

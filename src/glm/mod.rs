@@ -99,7 +99,7 @@ pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
 ///
 /// - `pos`: eye point in world coordinates
 /// - `target`: reference point in world coordinates that will be in the center of the screen
-/// - `up`: which direction is *up* in your world, this is typically [`Vec3::new(0.0, 1.0, 0.0)`](#method.new)
+/// - `up`: which direction is *up* in your world, this is typically [`Vec3::Y_AXIS`](./struct.Vec3.html#associatedconstant.Y_AXIS)
 ///
 /// ## Where is this typically used?
 ///
@@ -117,15 +117,15 @@ pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
 ///
 /// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#gae2dca3785b6d5796e876114af58a60a1](https://glm.g-truc.net/0.9.4/api/a00151.html#gae2dca3785b6d5796e876114af58a60a1)
 pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
-    let zaxis: Vec3 = (pos - target).normalize();
-    let xaxis: Vec3 = up.cross(target).normalize();
-    let yaxis: Vec3 = zaxis.cross(xaxis).normalize();
+    let zaxis: Vec3 = (target - pos).normalize();
+    let xaxis = zaxis.cross(up).normalize();
+    let yaxis = xaxis.cross(zaxis);
 
     Mat4::mat4([
-        xaxis[0], yaxis[0], zaxis[0], 0.0,
-        yaxis[1], yaxis[1], zaxis[1], 0.0,
-        zaxis[2], yaxis[2], zaxis[2], 0.0,
-        xaxis.dot(pos) * -1.0, yaxis.dot(pos) * -1.0, zaxis.dot(pos) * -1.0, 1.0,
+        xaxis.x(), yaxis.x(), -zaxis.x(), 0.0,
+        xaxis.y(), yaxis.y(), -zaxis.y(), 0.0,
+        xaxis.z(), yaxis.z(), -zaxis.z(), 0.0,
+        -pos.dot(xaxis), -pos.dot(yaxis), pos.dot(zaxis), 1.0,
     ])
 }
 

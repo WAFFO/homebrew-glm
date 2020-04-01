@@ -1,5 +1,4 @@
-
-use super::{Vec4, Mat3};
+use crate::{Vec4, Mat3, NEAR_ZERO};
 
 /** # Mat4 - 4x4 Matrix <f32>
 
@@ -97,11 +96,10 @@ impl Mat4 {
         &mut self[(col, row)]
     }
 
-    /// Test if this Mat4 is equals to another Mat4 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    /// Test if this Mat4 is equals to another Mat4 for each component up to 1e-6
     pub fn equals(&self, other: Mat4) -> bool {
-        use std::f32::EPSILON;
         for i in 0..16 {
-            if (self[i] - other[i]).abs() > EPSILON {
+            if (self[i] - other[i]).abs() > NEAR_ZERO {
                 return false
             }
         }

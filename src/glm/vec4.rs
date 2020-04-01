@@ -1,5 +1,5 @@
 
-use super::Vec3;
+use crate::{NEAR_ZERO, Vec3};
 use std::fmt::{Display, Formatter, Error};
 
 /** # Vec4 - 4 Dimensional Vector <f32>
@@ -21,6 +21,19 @@ use std::fmt::{Display, Formatter, Error};
 pub struct Vec4 ( pub(crate) [f32; 4] );
 
 impl Vec4 {
+
+    /// A unit Vec4 representing the positive X axis
+    pub const X_AXIS: Vec4 = Vec4 ( [ 1.0, 0.0, 0.0, 0.0 ] );
+
+    /// A unit Vec4 representing the positive Y axis
+    pub const Y_AXIS: Vec4 = Vec4 ( [ 0.0, 1.0, 0.0, 0.0 ] );
+
+    /// A unit Vec4 representing the positive Z axis
+    pub const Z_AXIS: Vec4 = Vec4 ( [ 0.0, 0.0, 1.0, 0.0 ] );
+
+    /// A unit Vec4 representing the positive W axis
+    pub const W_AXIS: Vec4 = Vec4 ( [ 0.0, 0.0, 0.0, 1.0 ] );
+
     /// Create a new Vec4 with x, y, z, w components
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Vec4 { Vec4 ( [x, y, z, w] ) }
 
@@ -77,13 +90,12 @@ impl Vec4 {
     /// Receive a Vec3 made up of the x, y, z components
     pub fn xyz(&self) -> Vec3 { Vec3([self[0], self[1], self[2]]) }
 
-    /// Test if this Vec4 is equals to another Vec4 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    /// Test if this Vec4 is equals to another Vec4 for each component up to 1e-6
     pub fn equals(&self, other: Vec4) -> bool {
-        use std::f32::EPSILON;
-        (self.x() - other.x()).abs() <= EPSILON
-            && (self.y() - other.y()).abs() <= EPSILON
-            && (self.z() - other.z()).abs() <= EPSILON
-            && (self.w() - other.w()).abs() <= EPSILON
+        (self.x() - other.x()).abs() <= NEAR_ZERO
+            && (self.y() - other.y()).abs() <= NEAR_ZERO
+            && (self.z() - other.z()).abs() <= NEAR_ZERO
+            && (self.w() - other.w()).abs() <= NEAR_ZERO
     }
 
     /// Receive the *dot* product of this Vec4 and another Vec4

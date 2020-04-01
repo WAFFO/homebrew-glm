@@ -1,4 +1,4 @@
-use super::Vec3;
+use crate::{Vec3, NEAR_ZERO};
 
 /** # Mat3 - 3x3 Matrix <f32>
 
@@ -94,11 +94,10 @@ impl Mat3 {
         &mut self[(col, row)]
     }
 
-    /// Test if this Mat3 is equals to another Mat3 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    /// Test if this Mat3 is equals to another Mat3 for each component up to 1e-6
     pub fn equals(&self, other: Mat3) -> bool {
-        use std::f32::EPSILON;
         for i in 0..9 {
-            if (self[i] - other[i]).abs() > EPSILON {
+            if (self[i] - other[i]).abs() > NEAR_ZERO {
                 return false
             }
         }

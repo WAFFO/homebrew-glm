@@ -20,7 +20,7 @@ macro_rules! vector_operations {
         impl std::ops::Neg for $VecN {
             type Output = $VecN;
 
-            fn neg(self) -> Self::Output {
+            fn neg(self) -> $VecN {
                 $VecN([
                     $(-self.0[$i],)+
                 ])

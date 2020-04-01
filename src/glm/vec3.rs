@@ -20,6 +20,16 @@ use std::fmt::{Display, Formatter, Error};
 pub struct Vec3 ( pub(crate) [f32; 3] );
 
 impl Vec3 {
+
+    /// A unit Vec3 representing the positive X axis (in OpenGL this is right)
+    pub const X_AXIS: Vec3 = Vec3 ( [ 1.0, 0.0, 0.0 ] );
+
+    /// A unit Vec3 representing the positive Y axis (in OpenGL this is up)
+    pub const Y_AXIS: Vec3 = Vec3 ( [ 0.0, 1.0, 0.0 ] );
+
+    /// A unit Vec3 representing the positive Z axis (in OpenGL this is towards the screen)
+    pub const Z_AXIS: Vec3 = Vec3 ( [ 0.0, 0.0, 1.0 ] );
+
     /// Create a new Vec3 with x, y, z components
     pub fn new(x: f32, y: f32, z: f32) -> Vec3 { Vec3 ( [x, y, z] ) }
 
@@ -35,6 +45,9 @@ impl Vec3 {
 
     /// Create a Vec3 with all the same values
     pub fn all(f: f32) -> Vec3 { Vec3 ( [f, f, f] ) }
+
+    /// Create a unit Vec3 with normalized values and a length of one
+    pub fn unit(x: f32, y: f32, z: f32) -> Vec3 { Vec3 ( [x, y, z] ).normalize() }
 
     /// Create a Vec3 from a 3 element array
     pub fn vec3(vec: [f32;3]) -> Vec3 { Vec3(vec) }
@@ -64,12 +77,11 @@ impl Vec3 {
     /// Receive the mutable reference for z
     pub fn z_mut(&mut self) -> &mut f32 { &mut self.0[2] }
 
-    /// Test if this Vec3 is equals to another Vec3 for each component up to [`f32::EPSILON`](https://doc.rust-lang.org/std/f32/constant.EPSILON.html)
+    /// Test if this Vec3 is equals to another Vec3 for each component up to 1e-6
     pub fn equals(&self, other: Vec3) -> bool {
-        use std::f32::EPSILON;
-        (self.x() - other.x()).abs() <= EPSILON
-            && (self.y() - other.y()).abs() <= EPSILON
-            && (self.z() - other.z()).abs() <= EPSILON
+        (self.x() - other.x()).abs() <= NEAR_ZERO
+            && (self.y() - other.y()).abs() <= NEAR_ZERO
+            && (self.z() - other.z()).abs() <= NEAR_ZERO
     }
 
     /// Receive the *dot* product of this Vec3 and another Vec3

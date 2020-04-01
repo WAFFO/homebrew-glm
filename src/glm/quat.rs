@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Error};
 
-use crate::{NEAR_ZERO, Mat4, Vec3, Mat3};
+use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at};
 
 /** # Quat - Quaternion <f32>
 
@@ -394,61 +394,27 @@ impl Quat {
         Self::from_angle_axis(angle * s, vec)
     }
 
-//    /// Create a orientation looking from a `pos` to a `target`
-//    ///
-//    /// ```
-//    /// # use homebrew_glm::{Quat, look_at, Vec3};
-//    /// let position = Vec3::new(0.0, 0.0, 0.0);
-//    /// let target = Vec3::new(1.0, 1.0, 1.0);
-//    ///
-//    /// let mat = look_at(position, target, Vec3::Y_AXIS);
-//    /// let quat = Quat::look_at(position, target, Vec3::Y_AXIS);
-//    ///
-//    /// println!("left: {}, right: {}", quat, Quat::from(mat));
-//    /// assert!(quat.equals(Quat::from(mat)));
-//    /// ```
-//    pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Quat {
-//        let forward = (target - pos).normalize();    // lookAt
-//        let right = (forward.cross(up)).normalize(); // sideaxis
-//        let up = right.cross(forward);               // rotatedup
-//
-//        let trace: f32 = right.x() + up.y() + forward.z();
-//        if trace > 0.0 {
-//            let s = 0.5 / (trace + 1.0).sqrt();
-//            Quat::new(
-//                (up.z() - forward.y()) * s,
-//                (forward.x() - right.z()) * s,
-//                (right.y() - up.x()) * s,
-//                0.25 / s,
-//            )
-//        } else {
-//            if right.x() > up.y() && right.x() > forward.z() {
-//                let s = 2.0 * (1.0 + right.x() - up.y() - forward.z()).sqrt();
-//                Quat::new(
-//                    0.25 * s,
-//                    (up.x() + right.y()) / s,
-//                    (forward.x() + right.z()) / s,
-//                    (up.z() - forward.y()) / s,
-//                )
-//            } else if up.y() > forward.z() {
-//                let s = 2.0 * (1.0 + up.y() - right.x() - forward.z()).sqrt();
-//                Quat::new(
-//                    (up.x() + right.y()) / s,
-//                    0.25 * s,
-//                    (forward.y() + up.z()) / s,
-//                    (forward.x() - right.z()) / s,
-//                )
-//            } else {
-//                let s = 2.0 * (1.0 + forward.z() - right.x() - up.y()).sqrt();
-//                Quat::new(
-//                    (forward.x() + right.z()) / s,
-//                    (forward.y() + up.z()) / s,
-//                    0.25 * s,
-//                    (right.y() - up.x()) / s,
-//                )
-//            }
-//        }
-//    }
+    /// Create a orientation looking from a `pos` to a `target`
+    ///
+    /// ```
+    /// # use homebrew_glm::{Quat, look_at, Vec3};
+    /// let position = Vec3::new(0.0, 0.0, 0.0);
+    /// let target = Vec3::new(1.0, 1.0, 1.0);
+    ///
+    /// let mat = look_at(position, target, Vec3::Y_AXIS);
+    /// let quat = Quat::look_at(position, target, Vec3::Y_AXIS);
+    ///
+    /// assert!(quat.mat4().equals(mat));
+    ///
+    /// let vertex = Vec3::new(10.0, -6.5, 6.0);
+    /// let quat_rotation = quat * vertex;
+    /// let mat_rotation = (mat * vertex.vec4(0.0)).xyz();
+    ///
+    /// assert!(quat_rotation.equals(mat_rotation));
+    /// ```
+    pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Quat {
+        Quat::from(look_at(pos, target, up))
+    }
 }
 
 //------------------------------------------------------------------------------------------------//

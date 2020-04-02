@@ -1,5 +1,5 @@
 
-use crate::{NEAR_ZERO, Vec3};
+use crate::{NEAR_ZERO, Vec3, Quat};
 use std::fmt::{Display, Formatter, Error};
 
 /** # Vec4 - 4 Dimensional Vector <f32>
@@ -36,6 +36,9 @@ impl Vec4 {
 
     /// Create a new Vec4 with x, y, z, w components
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Vec4 { Vec4 ( [x, y, z, w] ) }
+
+    /// Create a unit Vec4 with normalized values and a length of one
+    pub fn unit(x: f32, y: f32, z: f32, w: f32) -> Vec4 { Vec4 ( [x, y, z, w] ).normalize() }
 
     /// Create an additive identity Vec4
     ///
@@ -117,7 +120,7 @@ impl Vec4 {
     /// This function is equivalent to [`mag()`](#method.mag)
     pub fn length(&self) -> f32 { self.mag() }
 
-    /// Receive a normalization of Vec3
+    /// Receive a normalization of Vec4
     ///
     /// ```rust
     /// # use homebrew_glm::{assert_eq_float, Vec4};
@@ -144,9 +147,12 @@ impl From<Vec3> for Vec4 {
     /// Create a Vec4 from a Vec3, w will be 0.0
     ///
     /// Equivalent to `Vec4::vec3_w(v, 0.0);`
-    fn from(f: Vec3) -> Self {
-        Vec4 ( [f[0], f[1], f[2], 0.0] )
-    }
+    fn from(f: Vec3) -> Vec4 { Vec4 ( [f[0], f[1], f[2], 0.0] ) }
+}
+
+impl From<Quat> for Vec4 {
+    /// Cast a Quat to a Vec4, no transformations
+    fn from(f: Quat) -> Vec4 { Vec4([ f[0], f[1], f[2], f[3] ]) }
 }
 
 vector_operations!(Vec4, { 0, 1, 2, 3 });

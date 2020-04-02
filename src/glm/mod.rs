@@ -137,8 +137,12 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 ///
 /// This is typically used when building the model of an entity.
 ///
-/// ```text
-/// model = translation * rotation * scale;
+/// ```
+///  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+///  # let my_position = Vec3::zero();
+///  # let my_rotation = Quat::identity();
+///  # let my_scale = Vec3::one();
+///  let model: Mat4 = translate(my_position) * rotate(my_rotation) * scale(my_scale);
 /// ```
 ///
 /// The translation matrix is often the left most matrix. Matrix mulitiplication is **not**
@@ -179,8 +183,12 @@ pub fn translate(t: Vec3) -> Mat4 {
 ///
 /// This is typically used when building the model of an entity.
 ///
-/// ```text
-/// model = translation * rotation * scale;
+/// ```
+///  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+///  # let my_position = Vec3::zero();
+///  # let my_rotation = Quat::identity();
+///  # let my_scale = Vec3::one();
+///  let model: Mat4 = translate(my_position) * rotate(my_rotation) * scale(my_scale);
 /// ```
 ///
 /// The rotation matrix is to the right of the [translation](./fn.translate.html) matrix, so that we
@@ -218,8 +226,17 @@ pub fn rotate(q: Quat) -> Mat4 {
 ///
 /// This is typically used when building the model of an entity.
 ///
-/// ```text
-/// model = translation * rotate_x * rotate_y * rotate_z * scale;
+/// ```
+///  # use homebrew_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
+///  # let my_position = Vec3::zero();
+///  # let my_rotation = Vec3::zero();
+///  # let my_scale = Vec3::one();
+///  let model: Mat4 =
+///      translate(my_position)
+///          * rotate_x(my_rotation.x())
+///          * rotate_y(my_rotation.x())
+///          * rotate_z(my_rotation.x())
+///          * scale(my_scale);
 /// ```
 ///
 /// The order in when each axis is rotated depends entirely on your use case, but order does matter.
@@ -261,8 +278,17 @@ pub fn rotate_x(f: f32) -> Mat4 {
 ///
 /// This is typically used when building the model of an entity.
 ///
-/// ```text
-/// model = translation * rotate_x * rotate_y * rotate_z * scale;
+/// ```
+///  # use homebrew_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
+///  # let my_position = Vec3::zero();
+///  # let my_rotation = Vec3::zero();
+///  # let my_scale = Vec3::one();
+///  let model: Mat4 =
+///      translate(my_position)
+///          * rotate_x(my_rotation.x())
+///          * rotate_y(my_rotation.x())
+///          * rotate_z(my_rotation.x())
+///          * scale(my_scale);
 /// ```
 ///
 /// The order in when each axis is rotated depends entirely on your use case, but order does matter.
@@ -304,8 +330,17 @@ pub fn rotate_y(f: f32) -> Mat4 {
 ///
 /// This is typically used when building the model of an entity.
 ///
-/// ```text
-/// model = translation * rotate_x * rotate_y * rotate_z * scale;
+/// ```
+///  # use homebrew_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
+///  # let my_position = Vec3::zero();
+///  # let my_rotation = Vec3::zero();
+///  # let my_scale = Vec3::one();
+///  let model: Mat4 =
+///      translate(my_position)
+///          * rotate_x(my_rotation.x())
+///          * rotate_y(my_rotation.x())
+///          * rotate_z(my_rotation.x())
+///          * scale(my_scale);
 /// ```
 ///
 /// The order in when each axis is rotated depends entirely on your use case, but order does matter.
@@ -347,8 +382,12 @@ pub fn rotate_z(f: f32) -> Mat4 {
 ///
 /// This is typically used when building the model of an entity.
 ///
-/// ```text
-/// model = translation * rotation * scale;
+/// ```
+///  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+///  # let my_position = Vec3::zero();
+///  # let my_rotation = Quat::identity();
+///  # let my_scale = Vec3::one();
+///  let model: Mat4 = translate(my_position) * rotate(my_rotation) * scale(my_scale);
 /// ```
 ///
 /// The scale matrix should be the right most matrix, so that the model is scaled first, otherwise

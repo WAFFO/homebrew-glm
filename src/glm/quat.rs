@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter, Error};
 
-use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at};
+use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
 
 /** # Quat - Quaternion <f32>
 
@@ -19,8 +19,8 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at};
 
   The most common way to create a Quaternion and probably the easiest way to think of Quaternions is
   with [`Quat::from_angle_axis(angle: f32, axis: Vec3)`](#method.from_angle_axis). Where `axis` is a
-  unit [`Vec3`](struct.Vec3.html) representing the axis of rotation, and angle is the rotation around
-  `axis` in radians. This creates a `Quat` that represents that specific orientation.
+  unit [`Vec3`](struct.Vec3.html) representing the axis of rotation, and angle is the rotation
+  around `axis` in radians. This creates a `Quat` that represents that specific orientation.
 
   ```
   # use homebrew_glm::{Quat, Vec3};
@@ -63,12 +63,13 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at};
   #### Updating a Quaternion
 
   It's enitrely possible to just store an angle and an axis and create a quaternion on each frame,
-  but the best quality of Quaternions is their ability to interpolate rotations.
+  but the best quality of Quaternions is their ability to compose rotations without fear of gimbal
+  lock.
 
-  Multiplying two quatrnions compounds two rotations, in a similar way to vector addition, and is a
-  relatively cheap operation to perform. The following example uses
-  [`Quat::from_two_axis()`](#method.from_two_axis), take a look at it's documentation. Note how
-  the order of rotations affect the result.
+  Multiplying two quatrnions, compounds two rotations in a similar way to vector addition, but it is
+  not communitive like vecter addition. It's a relatively cheap operation to perform. The following
+  example uses [`Quat::from_two_axis()`](#method.from_two_axis), take a look at it's documentation.
+  Note how the order of rotations affect the result.
 
   ```
   # use homebrew_glm::{Quat, Vec3};
@@ -94,8 +95,32 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at};
 
   What this shows is if your current orientation is represented by a [`Quat`](#), and you want to
   rotate the object by another [`Quat`](#), all you have to do is multiply this orientation by a
-  rotation.
+  rotation. Alternatively you can use [`.rotate()`](#method.rotate) if you're used to that diction.
 
+  #### Retreiving and Representing a Rotation with Quat
+
+  The most common use case for Quaternions is storing them as a represention of a rotation for a
+  particular instance. When it comes time for building a model for this instance, we retreive the
+  instances position, scale, and its rotation.
+
+  To reteive a rotation matrix from a Quaternion, use either [`quat.mat4()`](#method.mat4)
+  or this crates glm function [`rotate()`](./fn.rotate.html).
+  ```
+  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+  # let my_position = Vec3::zero();
+  # let my_rotation = Quat::identity();
+  # let my_scale = Vec3::one();
+  let model: Mat4 = translate(my_position) * rotate(my_rotation) * scale(my_scale);
+  ```
+
+  ## Default
+
+  [Default](https://doc.rust-lang.org/nightly/core/default/trait.Default.html) is implemented for
+  ease of use with ECS libraries like [specs](https://docs.rs/specs/0.16.1/specs/) that require
+  components to implement Default.
+
+  [`Quat::default()`](#method.default) is equivalent to [`Quat::identity()`](#method.identity) and
+  we recommend using that function instead to make your code more explicit.
 */
 
 // note: layout is [ x, y, z, w]
@@ -105,22 +130,62 @@ pub struct Quat (pub(crate) [f32; 4]);
 
 
 impl Quat {
-
+    /// Create a quaternion with explicitly set x, y, z, and w components
+    ///
+    /// Normally you don't want to create your own, as Quat should be normalized whenever possible.
+    /// If you do use this function we recommend using [`.normalize()`](#method.normalize).
+    ///
+    /// Consider instead [`unit()`](#method.unit), which is equivalent to
+    /// `Quat::new(x, y, z, w).normalize()`
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Quat { Quat ( [ x, y, z, w] ) }
+
+    /// Create a unit quaternion based on x, y, z, and w components
+    pub fn unit(x: f32, y: f32, z: f32, w: f32) -> Quat { Quat ( [ x, y, z, w] ).normalize() }
+
+    /// Create a unit identity quaternion
     pub fn identity() -> Quat { Quat ( [0.0, 0.0, 0.0, 1.0] ) }
+
+    /// Receive the x value
     pub fn x(&self) -> f32 { self.0[0] }
+
+    /// Receive the y value
     pub fn y(&self) -> f32 { self.0[1] }
+
+    /// Receive the z value
     pub fn z(&self) -> f32 { self.0[2] }
+
+    /// Receive the w value
     pub fn w(&self) -> f32 { self.0[3] }
+
+    /// Receive the 'vector' portion of the quaternion
+    ///
+    /// Please note that this is **not** the same as the axis you are rotating around
     pub fn xyz(&self) -> Vec3 { Vec3([self.0[0], self.0[1], self.0[2]]) }
+
+    /// Test if this [`Vec3`](./struct.Vec3.html) is equals to another [`Vec3`](./struct.Vec3.html)
+    /// for each component up to 1e-6
     pub fn equals(&self, other: Quat) -> bool {
-        (self.x() - other.x()).abs() < NEAR_ZERO
-            && (self.y() - other.y()).abs() < NEAR_ZERO
-            && (self.z() - other.z()).abs() < NEAR_ZERO
-            && (self.w() - other.w()).abs() < NEAR_ZERO
+        Vec4::from(*self).equals(Vec4::from(other))
+        || Vec4::from(*self * -1.0).equals(Vec4::from(other))
     }
+
+    /// Receive the magnitude of this Quat, should always be 1.0
+    ///
+    /// This function is equivalent to [`length()`](#method.length)
     pub fn mag(&self) -> f32 { ( self[0].powi(2) + self[1].powi(2) + self[2].powi(2) + self[3].powi(2) ).sqrt() }
+
+    /// Receive the length of this Quat, should always be 1.0
+    ///
+    /// This function is equivalent to [`mag()`](#method.mag)
     pub fn length(&self) -> f32 { self.mag() }
+
+    /// Receive a normalization of this Quat
+    ///
+    /// ```rust
+    /// # use homebrew_glm::{assert_eq_float, Quat};
+    /// let v = Quat::new(1.0, 2.0, -0.5, 0.1).normalize();
+    /// assert_eq_float!(1.0, v.length());
+    /// ```
     pub fn normalize(&self) -> Quat {
         let mag = self.mag();
         if mag != 0.0 {
@@ -130,6 +195,8 @@ impl Quat {
             *self
         }
     }
+
+    /// Receive the conjugate of this Quat
     pub fn conjugate(&self) -> Quat {
         Quat ( [
             -self.x(), // x
@@ -138,6 +205,10 @@ impl Quat {
              self.w(), // w
         ] )
     }
+
+    /// Receive the inverse of this Quat
+    ///
+    /// `quat * -1.0` is not the inverse, it's still the same quaternion!
     pub fn inverse(&self) -> Quat {
         let inv_norm = 1.0 / (
             self.w() * self.w() +
@@ -146,6 +217,8 @@ impl Quat {
             self.z() * self.z() );
         self.conjugate() * inv_norm
     }
+
+    /// Receive the Mat3 rotation matrix representing this Quat
     pub fn mat3(&self) -> Mat3 {
         // calculate coefficients
         let x2 = self.x() + self.x();
@@ -166,6 +239,8 @@ impl Quat {
                   xz + wy,       yz - wx, 1.0 - xx - yy,
         ])
     }
+
+    /// Receive the Mat4 rotation matrix representing this Quat
     pub fn mat4(&self) -> Mat4 {
         // calculate coefficients
         let x2 = self.x() + self.x();
@@ -189,10 +264,16 @@ impl Quat {
 
     }
 
+    /// Rotate this Quat by the rotation of another Quat
     pub fn rotate(&self, rotation: Quat) -> Quat {
         *self * rotation
     }
 
+    /// Receive the rotation at a particular point in time in a Spherical Linear Interpolation
+    ///
+    /// This function calls `.acos()` which can be expensive, so reserve this for special occasions.
+    /// Consider using it's cheaper cousin [`lerp()`](#method.lerp) if you know for sure the
+    /// difference in rotation is small.
     pub fn slerp(&self, mut to: Quat, t: f32) -> Quat {
         let scale0: f32;
         let scale1: f32;
@@ -230,6 +311,7 @@ impl Quat {
         )
     }
 
+    /// Receive the rotation at a particular point in time in a Linear Interpolation
     pub fn lerp(&self, mut to: Quat, t: f32) -> Quat {
 
         // calc cosine
@@ -253,10 +335,10 @@ impl Quat {
         )
     }
 
-    /// Create a rotation from one axis to another. Both `from` and `to` must be unit vectors!
+    /// Build a rotation from one axis to another. Both `from` and `to` must be unit vectors!
     ///
-    /// This resulting quaternion represents the rotation necessary to rotate the `from` Vec3 to the
-    /// `to` Vec3.
+    /// This resulting quaternion represents the rotation necessary to rotate the `from` [`Vec3`](./struct.Vec3.html)
+    /// to the `to` [`Vec3`](./struct.Vec3.html).
     ///
     /// ```
     /// # use homebrew_glm::{Vec3, Quat};
@@ -327,27 +409,33 @@ impl Quat {
         Quat::new(tx, ty, tz, (0.5 * (1.0 + cost)).sqrt())
     }
 
-    /// TODO: Change from yaw, pitch, roll to rotate_x, rotate_y, rotate_z (this is not in respect to current order)
-    pub fn from_euler_ypr(yaw: f32, pitch: f32, roll: f32) -> Quat {
-        let cr = (roll/2.0).cos();
-        let cp = (pitch/2.0).cos();
-        let cy = (yaw/2.0).cos();
-        let sr = (roll/2.0).sin();
-        let sp = (pitch/2.0).sin();
-        let sy = (yaw/2.0).sin();
-        let cpcy = cp * cy;
-        let spsy = sp * sy;
-        let spcy = sp * cy;
-        let cpsy = cp * sy;
-        Quat ([
-            cr * spcy + sr * cpsy,
-            cr * cpsy - sr * spcy,
-            cr * cpcy + sr * spsy,
-            sr * cpcy - cr * spsy,
-        ])
+    /// Build a Quat based entirely on Euler axis rotations
+    ///
+    /// TODO: BROKEN, CHECK quat_tests.rs : to_euler_xyz_rotation_test() , X and Z swapped?
+    ///
+    /// Rotation order is Z -> Y -> X
+    pub fn from_euler_xyz_rotation(x_rotation: f32, y_rotation: f32, z_rotation: f32) -> Quat {
+        let cr = (z_rotation/2.0).cos();
+        let cp = (y_rotation/2.0).cos();
+        let cy = (x_rotation/2.0).cos();
+        let sr = (z_rotation/2.0).sin();
+        let sp = (y_rotation/2.0).sin();
+        let sy = (x_rotation/2.0).sin();
+        let cycp = cy * cp;
+        let sysp = sy * sp;
+        let cysp = cy * sp;
+        let sycp = sy * cp;
+        Quat::unit(
+            sycp * cr - cysp * sr,
+            cysp * cr + sycp * sr,
+            cycp * sr - sysp * cr,
+            cycp * cr + sysp * sr,
+        )
     }
 
-    /// vec must be normalized
+    /// Build a Quat from an axis or rotation, and a float of radians around that axis
+    ///
+    /// `axis` must be normalized!
     pub fn from_angle_axis(angle: f32, axis: Vec3) -> Quat {
         // scalar
         let scale = (angle / 2.0).sin();
@@ -360,20 +448,28 @@ impl Quat {
         ])
     }
 
-    pub fn to_euler_ypr(&self) -> Vec3 {
-        let t0 = 2.0 * (self.w() * self.x() + self.y() * self.z());
-        let t1 = 1.0 - 2.0 * (self.x() * self.x() + self.y() * self.y());
-        let roll = t0.atan2(t1);
-        let mut t2 = 2.0 * (self.w() * self.y() - self.z() * self.x());
-        t2 = if t2 > 1.0 { 1.0 } else { t2 };
-        t2 = if t2 < -1.0 { -1.0 } else { t2 };
-        let pitch = t2.asin();
-        let t3 = 2.0 * (self.w() * self.z() + self.x() * self.y());
-        let t4 = 1.0 - 2.0 * (self.y() * self.y() + self.z() * self.z());
-        let yaw = t3.atan2(t4);
-        Vec3([yaw, pitch, roll])
+    /// Convert this Quat into a [`Vec3`](./struct.Vec3.html) containing rotations for the X, Y, and
+    /// Z axes. Rotation order is ZYX.
+    ///
+    /// Note: Euler is very strange, especially around PI/2. Quaternions are highly recommended.
+    pub fn to_euler_xyz_rotation(&self) -> Vec3 {
+        let r11 = 2.0*(self.y()*self.z() + self.w()*self.x());
+        let r12 = self.w()*self.w() - self.x()*self.x() - self.y()*self.y() + self.z()*self.z();
+        let r21 = -2.0*(self.x()*self.z() - self.w()*self.y());
+        let r31 = 2.0*(self.x()*self.y() + self.w()*self.z());
+        let r32 = self.w()*self.w() + self.x()*self.x() - self.y()*self.y() - self.z()*self.z();
+
+        // simple clamp
+        let r21 = if r21 > 1.0 { 1.0 } else if r21 < -1.0 { -1.0 } else { r21 };
+
+        Vec3::new(
+            r11.atan2(r12),
+            r21.asin(),
+            r31.atan2(r32),
+        )
     }
 
+    /// Covert this Quat into a scalar and Vec3 tuple. Scalar is radians around the Vec3 axis.
     pub fn to_angle_axis(&self) -> (f32, Vec3) {
 
         let angle = 2.0 * self.w().acos();
@@ -389,29 +485,21 @@ impl Quat {
         }
     }
 
+    /// Scale the radians of rotation around the inner axis
     pub fn scale_angle(&self, s: f32) -> Quat {
         let (angle, vec) = self.to_angle_axis();
         Self::from_angle_axis(angle * s, vec)
     }
 
-    /// Create a orientation looking from a `pos` to a `target`
+    /// Set the radians of rotation around the inner axis
+    pub fn set_angle(&self, s: f32) -> Quat {
+        let (_, vec) = self.to_angle_axis();
+        Self::from_angle_axis(s, vec)
+    }
+
+    /// Create a orientation looking from a `pos` to a `target` with an up vector to prevent rolling
     ///
-    /// ```
-    /// # use homebrew_glm::{Quat, look_at, Vec3};
-    /// let position = Vec3::new(0.0, 0.0, 0.0);
-    /// let target = Vec3::new(1.0, 1.0, 1.0);
-    ///
-    /// let mat = look_at(position, target, Vec3::Y_AXIS);
-    /// let quat = Quat::look_at(position, target, Vec3::Y_AXIS);
-    ///
-    /// assert!(quat.mat4().equals(mat));
-    ///
-    /// let vertex = Vec3::new(10.0, -6.5, 6.0);
-    /// let quat_rotation = quat * vertex;
-    /// let mat_rotation = (mat * vertex.vec4(0.0)).xyz();
-    ///
-    /// assert!(quat_rotation.equals(mat_rotation));
-    /// ```
+    /// See also: [`look_at()`](./fn.lookAt.html)
     pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Quat {
         Quat::from(look_at(pos, target, up))
     }
@@ -423,6 +511,7 @@ impl Quat {
 impl std::ops::Mul<Quat> for Quat {
     type Output = Quat;
 
+    /// Rotate a quaternion by another rotation
     fn mul(self, rhs: Quat) -> Quat {
         Quat ( [
             self.x() * rhs.w() + self.w() * rhs.x() + self.y() * rhs.z() - self.z() * rhs.y(), // x
@@ -435,6 +524,7 @@ impl std::ops::Mul<Quat> for Quat {
 
 impl std::ops::MulAssign<Quat> for Quat {
 
+    /// Rotate a quaternion by another rotation
     fn mul_assign(&mut self, rhs: Quat) {
         *self = *self * rhs;
     }
@@ -444,6 +534,7 @@ impl std::ops::MulAssign<Quat> for Quat {
 impl std::ops::Mul<Vec3> for Quat {
     type Output = Vec3;
 
+    /// Rotate a [`Vec3`](./struct.Vec3.html) by this quaternion
     fn mul(self, rhs: Vec3) -> Vec3 {
         let q_xyz: Vec3 = self.xyz();
         let t: Vec3 = q_xyz.cross(rhs) * 2.0;
@@ -455,6 +546,7 @@ impl std::ops::Mul<Vec3> for Quat {
 impl std::ops::Mul<f32> for Quat {
     type Output = Quat;
 
+    /// Scale this quaternion, warning: likely to no longer be a unit quaternion after this
     fn mul(self, rhs: f32) -> Quat {
         // may not be a unit quaternion after this
         Quat::new(self.x() * rhs, self.y() * rhs, self.z() * rhs, self.w() * rhs)
@@ -462,6 +554,7 @@ impl std::ops::Mul<f32> for Quat {
 }
 
 impl std::ops::MulAssign<f32> for Quat {
+    /// Scale this quaternion, warning: likely to no longer be a unit quaternion after this
     fn mul_assign(&mut self, rhs: f32) {
         // may not be a unit quaternion after this
         self[0] *= rhs;
@@ -474,6 +567,8 @@ impl std::ops::MulAssign<f32> for Quat {
 impl std::ops::Div<f32> for Quat {
     type Output = Quat;
 
+
+    /// Scale this quaternion, warning: likely to no longer be a unit quaternion after this
     fn div(self, rhs: f32) -> Quat {
         if rhs == 0.0 { panic!("Cannot divide by zero. (Quat / 0.0)"); }
         Quat ( [
@@ -486,6 +581,8 @@ impl std::ops::Div<f32> for Quat {
 }
 
 impl std::ops::DivAssign<f32> for Quat {
+
+    /// Scale this quaternion, warning: likely to no longer be a unit quaternion after this
     fn div_assign(&mut self, rhs: f32) {
         // may not be a unit quaternion after this
         self[0] /= rhs;
@@ -498,12 +595,14 @@ impl std::ops::DivAssign<f32> for Quat {
 impl std::ops::Index<usize> for Quat {
     type Output = f32;
 
+    /// Obtain a reference to a component of this Quat, order is x, y, z, w.
     fn index(&self, index: usize) -> &f32 {
         &self.0[index]
     }
 }
 
 impl std::ops::IndexMut<usize> for Quat {
+    /// Obtain a mutable reference to a component of this Quat, order is x, y, z, w.
     fn index_mut(&mut self, index: usize) -> &mut f32 {
         &mut self.0[index]
     }
@@ -512,7 +611,7 @@ impl std::ops::IndexMut<usize> for Quat {
 //------------------------------------------------------------------------------------------------//
 // FROM                                                                                           //
 //------------------------------------------------------------------------------------------------//
-/// Convert from a Mat4 rotation matrix to Quat
+/// Convert from a [`Mat4`](./struct.Mat4.html) rotation matrix to [`Quat`](./struct.Quat.html)
 ///
 /// ```
 /// # use homebrew_glm::{Vec3, Quat};
@@ -559,16 +658,17 @@ impl From<Mat4> for Quat {
     }
 }
 
-impl From<Vec3> for Quat {
-    fn from(f: Vec3) -> Self {
-        Quat::from_euler_ypr(f.x(), f.y(), f.z())
-    }
-}
+//impl From<Vec3> for Quat {
+//    fn from(f: Vec3) -> Self {
+//        Quat::from_euler_ypr(f.x(), f.y(), f.z())
+//    }
+//}
 
 //------------------------------------------------------------------------------------------------//
 // OTHER                                                                                          //
 //------------------------------------------------------------------------------------------------//
 impl Default for Quat {
+    /// Creates the default value for [`Quat`](./struct.Quat.html), [`Quat::identity()`]([`Quat`](./struct.Quat.html#method.identity)
     fn default() -> Self {
         Quat::identity()
     }
@@ -576,6 +676,6 @@ impl Default for Quat {
 
 impl Display for Quat {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "({} + {}i + {}j + {}k)", self.w(), self.x(), self.y(), self.z())
+        write!(f, "({} + {} i + {} j + {} k)", self.w(), self.x(), self.y(), self.z())
     }
 }

@@ -33,6 +33,9 @@ impl Vec3 {
     /// Create a new Vec3 with x, y, z components
     pub fn new(x: f32, y: f32, z: f32) -> Vec3 { Vec3 ( [x, y, z] ) }
 
+    /// Create a unit Vec3 with normalized values and a length of one
+    pub fn unit(x: f32, y: f32, z: f32) -> Vec3 { Vec3 ( [x, y, z] ).normalize() }
+
     /// Create an additive identity Vec3
     ///
     /// Equivalent to [`Vec3::new(0.0, 0.0, 0.0)`](#method.new)
@@ -45,9 +48,6 @@ impl Vec3 {
 
     /// Create a Vec3 with all the same values
     pub fn all(f: f32) -> Vec3 { Vec3 ( [f, f, f] ) }
-
-    /// Create a unit Vec3 with normalized values and a length of one
-    pub fn unit(x: f32, y: f32, z: f32) -> Vec3 { Vec3 ( [x, y, z] ).normalize() }
 
     /// Create a Vec3 from a 3 element array
     pub fn vec3(vec: [f32;3]) -> Vec3 { Vec3(vec) }

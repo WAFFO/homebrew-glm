@@ -162,11 +162,18 @@ impl Quat {
     /// Please note that this is **not** the same as the axis you are rotating around
     pub fn xyz(&self) -> Vec3 { Vec3([self.0[0], self.0[1], self.0[2]]) }
 
-    /// Test if this [`Vec3`](./struct.Vec3.html) is equals to another [`Vec3`](./struct.Vec3.html)
+    /// Test if this [`Quat`](./struct.Quat.html) is equals to another [`Quat`](./struct.Quat.html)
     /// for each component up to 1e-6
     pub fn equals(&self, other: Quat) -> bool {
         Vec4::from(*self).equals(Vec4::from(other))
         || Vec4::from(*self * -1.0).equals(Vec4::from(other))
+    }
+
+    /// Test if this [`Quat`](./struct.Quat.html) is equals to another [`Quat`](./struct.Vec3.html)
+    /// for each component up to an epsilon
+    pub fn equals_epsilon(&self, other: Quat, epsilon: f32) -> bool {
+        Vec4::from(*self).equals_epsilon(Vec4::from(other), epsilon)
+            || Vec4::from(*self * -1.0).equals_epsilon(Vec4::from(other), epsilon)
     }
 
     /// Receive the magnitude of this Quat, should always be 1.0
@@ -410,8 +417,6 @@ impl Quat {
     }
 
     /// Build a Quat based entirely on Euler axis rotations
-    ///
-    /// TODO: BROKEN, CHECK quat_tests.rs : to_euler_xyz_rotation_test() , X and Z swapped?
     ///
     /// Rotation order is Z -> Y -> X
     pub fn from_euler_xyz_rotation(x_rotation: f32, y_rotation: f32, z_rotation: f32) -> Quat {

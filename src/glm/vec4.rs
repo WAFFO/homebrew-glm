@@ -95,10 +95,15 @@ impl Vec4 {
 
     /// Test if this Vec4 is equals to another Vec4 for each component up to 1e-6
     pub fn equals(&self, other: Vec4) -> bool {
-        (self.x() - other.x()).abs() <= NEAR_ZERO
-            && (self.y() - other.y()).abs() <= NEAR_ZERO
-            && (self.z() - other.z()).abs() <= NEAR_ZERO
-            && (self.w() - other.w()).abs() <= NEAR_ZERO
+        self.equals_epsilon(other, NEAR_ZERO)
+    }
+
+    /// Test if this Vec4 is equals to another Vec4 for each component up to an epsilon
+    pub fn equals_epsilon(&self, other: Vec4, epsilon: f32) -> bool {
+        (self.x() - other.x()).abs() <= epsilon
+            && (self.y() - other.y()).abs() <= epsilon
+            && (self.z() - other.z()).abs() <= epsilon
+            && (self.w() - other.w()).abs() <= epsilon
     }
 
     /// Receive the *dot* product of this Vec4 and another Vec4

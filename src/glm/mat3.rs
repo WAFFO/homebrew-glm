@@ -51,6 +51,8 @@ pub struct Mat3 ( pub(crate) [f32; 9] );
 
 impl Mat3 {
 
+
+
     /// Create a new Mat3 from three Vec3 columns
     pub fn new(col1: Vec3, col2: Vec3, col3: Vec3) -> Mat3 {
         Mat3 ( [
@@ -96,8 +98,13 @@ impl Mat3 {
 
     /// Test if this Mat3 is equals to another Mat3 for each component up to 1e-6
     pub fn equals(&self, other: Mat3) -> bool {
+        self.equals_epsilon(other, NEAR_ZERO)
+    }
+
+    /// Test if this Mat3 is equals to another Mat3 for each component up to an epsilon
+    pub fn equals_epsilon(&self, other: Mat3, epsilon: f32) -> bool {
         for i in 0..9 {
-            if (self[i] - other[i]).abs() > NEAR_ZERO {
+            if (self[i] - other[i]).abs() > epsilon {
                 return false
             }
         }

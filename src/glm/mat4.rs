@@ -98,8 +98,13 @@ impl Mat4 {
 
     /// Test if this Mat4 is equals to another Mat4 for each component up to 1e-6
     pub fn equals(&self, other: Mat4) -> bool {
+        self.equals_epsilon(other, NEAR_ZERO)
+    }
+
+    /// Test if this Mat4 is equals to another Mat4 for each component up to an epsilon
+    pub fn equals_epsilon(&self, other: Mat4, epsilon: f32) -> bool {
         for i in 0..16 {
-            if (self[i] - other[i]).abs() > NEAR_ZERO {
+            if (self[i] - other[i]).abs() > epsilon {
                 return false
             }
         }

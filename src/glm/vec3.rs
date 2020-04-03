@@ -82,9 +82,14 @@ impl Vec3 {
 
     /// Test if this Vec3 is equals to another Vec3 for each component up to 1e-6
     pub fn equals(&self, other: Vec3) -> bool {
-        (self.x() - other.x()).abs() <= NEAR_ZERO
-            && (self.y() - other.y()).abs() <= NEAR_ZERO
-            && (self.z() - other.z()).abs() <= NEAR_ZERO
+        self.equals_epsilon(other, NEAR_ZERO)
+    }
+
+    /// Test if this Vec3 is equals to another Vec3 for each component up to an epsilon
+    pub fn equals_epsilon(&self, other: Vec3, epsilon: f32) -> bool {
+        (self.x() - other.x()).abs() <= epsilon
+            && (self.y() - other.y()).abs() <= epsilon
+            && (self.z() - other.z()).abs() <= epsilon
     }
 
     /// Receive the *dot* product of this Vec3 and another Vec3

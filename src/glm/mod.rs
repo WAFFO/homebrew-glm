@@ -95,11 +95,11 @@ pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
 /// Build a *View Matrix* that transforms vertices from world space to eye space
 ///
 /// The matrix is derived from an eye point, a reference point indicating the center of
-/// the scene, and an UP vector.
+/// the scene, and an up vector.
 ///
 /// - `pos`: eye point in world coordinates
 /// - `target`: reference point in world coordinates that will be in the center of the screen
-/// - `up`: which direction is *up* in your world, this is typically [`Vec3::Y_AXIS`](./struct.Vec3.html#associatedconstant.Y_AXIS)
+/// - `up`: which direction is up in your world, this is typically [`Vec3::Y_AXIS`](./struct.Vec3.html#associatedconstant.Y_AXIS)
 ///
 /// ## Where is this typically used?
 ///
@@ -109,9 +109,9 @@ pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
 /// gl_Position = u_projection * view * v_position;
 /// ```
 ///
-/// The view matrix is typically used to multiply the current vertex being iterated on. This matrix
-/// rotates the world space around based one what is in front of the eye and what is not. The result
-/// of this is often times referred to as the eye space.
+/// The view matrix is typically used to multiply the current vertex, being iterated on,
+/// `v_position` in the example. This matrix rotates the world space around based on the eye
+/// position and where it's looking. The result of this is often times referred to as the eye space.
 ///
 /// ## GLM equivalent function
 ///
@@ -152,7 +152,7 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are translating a vector, which really is equivalent to adding a
+/// In the code snippet below, I am translating a vector, which really is equivalent to adding a
 /// vectors components. This is how we set the position of points in the world space.
 ///
 /// ```
@@ -192,14 +192,14 @@ pub fn translate(t: Vec3) -> Mat4 {
 /// ```
 ///
 /// The rotation matrix is to the right of the [translation](./fn.translate.html) matrix, so that we
-/// may rotate in place around the origin (0,0,0) before we translate. Unless you want the model to
-/// stretch along a certain axis no matter which way it's rotated, the rotation matrix should always
-/// come after (to the left) of the [scale](./fn.scale.html) matrix.
+/// may rotate in place around the origin (0,0,0) before we translate. The rotation matrix should
+/// always come after (to the left of) the [scale](./fn.scale.html) matrix, otherwise the model to
+/// stretch along a certain axis no matter which way it's rotated.
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are rotating a vector that is pointing in the positive Z direction
-/// a quater turn counter clockwise around an axis-vector pointing in the negative X and positive Y
+/// In the code snippet below, I am rotating a vector that is pointing in the positive Z direction
+/// a quarter turn counterclockwise around an axis-vector pointing in the negative X and positive Y
 /// direction. The expected resulting vector is pointing in the positive X and positive Y direction.
 ///
 /// ```
@@ -245,8 +245,8 @@ pub fn rotate(q: Quat) -> Mat4 {
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are rotating a vector that is pointing in the positive Z direction
-/// a quater turn counter clockwise around the X axis. The expected resulting vector is pointing in
+/// In the code snippet below, I am rotating a vector that is pointing in the positive Z direction
+/// a quarter turn counterclockwise around the X axis. The expected resulting vector is pointing in
 /// the negative Y direction.
 ///
 /// ```
@@ -297,8 +297,8 @@ pub fn rotate_x(f: f32) -> Mat4 {
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are rotating a vector that is pointing in the positive Z direction
-/// a quater turn counter clockwise around the Y axis. The expected resulting vector is pointing in
+/// In the code snippet below, I am rotating a vector that is pointing in the positive Z direction
+/// a quarter turn counterclockwise around the Y axis. The expected resulting vector is pointing in
 /// the positive X direction.
 ///
 /// ```
@@ -349,8 +349,8 @@ pub fn rotate_y(f: f32) -> Mat4 {
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are rotating a vector that is pointing in the positive X direction
-/// a quater turn counter clockwise around the Z axis. The expected resulting vector is pointing in
+/// In the code snippet below, I am rotating a vector that is pointing in the positive X direction
+/// a quarter turn counterclockwise around the Z axis. The expected resulting vector is pointing in
 /// the positive Y direction.
 ///
 /// ```
@@ -397,7 +397,7 @@ pub fn rotate_z(f: f32) -> Mat4 {
 ///
 /// ## Example
 ///
-/// In the code snippet below, we are scaling a vector by it's individual components. It's
+/// In the code snippet below, I am scaling a vector by it's individual components. It's
 /// equivalent to multiplying each component by a different scalar.
 ///
 /// ```

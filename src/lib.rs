@@ -16,10 +16,11 @@
   ### Straight Forward
 
   This library should be _simple_ and _easy to use_. Types aren't heavily abstracted, so any
-  compilation errors encountered will be easy to understand, and what a types a function requires
+  compilation errors encountered will be easy to understand, and what types a function requires
   can't be misinterpreted. By default, each type has the copy trait, and no functions take a
-  reference, removing the small road-bumps a developer might have forgetting to pass by reference.
-  This way we leverage the power of Rust and let the compiler optimize the memory allocation.
+  reference, removing the small road-bumps a developer might encounter by forgetting to pass by
+  reference. This way we leverage the power of Rust and let the compiler optimize the memory
+  allocation.
 
   ### IDE Friendly
 
@@ -28,12 +29,8 @@
 
   ### Complete Documentation
 
-  This goes beyond just giving descriptions for functions, but explaining the finer details of
-  complicated functionality. Giving examples where necessary. Concepts here are available all over
-  the internet, but the examples aren't executed with this library. The examples might be following
-  the left handed rule, the matrices might be row-major, or the axis may be pointing in different
-  directions. It could be any combination of those, and it's an obligation of the library to provide
-  relevant examples.
+  This goes beyond just giving descriptions for functions, by explaining the finer details of
+  complicated functionality and application. Giving examples where necessary.
 
   ### Lightweight
 

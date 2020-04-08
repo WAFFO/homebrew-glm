@@ -6,21 +6,22 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
 
   Quaternions are four component vectors that represent rotations or orientations.
 
-  Quat will at all times try stay a unit quaternion, the exception to this are if you multiply
-  or divide a quaternion by a scalar, it will no longer be a unit quaternion.
+  Quat will at all times try stay a unit quaternion, unless you multiply or divide a quaternion by a
+  scalar, at which point it will no longer be a unit quaternion.
 
   ## How to use Quaternions
 
-  There are lots of videos about the math behind Quaternions, but I've found much less resources on
+  There are lots of videos about the math behind quaternions, but I've found far fewer resources on
   how to actually *use* them. This particular fact has always bothered me so I'd like to explain how
-  use them here to the best of my ability.
+  to use them here to the best of my ability.
 
   #### Creating a Quaternion
 
-  The most common way to create a Quaternion and probably the easiest way to think of Quaternions is
+  The most common way to create a quaternion and probably the easiest way to think of quaternions is
   with [`Quat::from_angle_axis(angle: f32, axis: Vec3)`](#method.from_angle_axis). Where `axis` is a
   unit [`Vec3`](struct.Vec3.html) representing the axis of rotation, and angle is the rotation
-  around `axis` in radians. This creates a `Quat` that represents that specific orientation.
+  around `axis` in radians. This creates a [`Quat`](./struct.Quat.html) that represents that
+  specific orientation.
 
   ```
   # use homebrew_glm::{Quat, Vec3};
@@ -31,8 +32,8 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
 
   #### Rotating a Vec3 with a Quaternion
 
-  Ultimately the point of Quaternions or any other 3D transformation is to transform verticies in
-  the third dimension.
+  Ultimately the point of quaternions or any other 3D transformation is to transform vertices in the
+  third dimension.
 
   Given a [`Vec3`](./struct.Vec3.html) we can rotate it one of two ways:
   - multiplying with a [`Quat`](#)
@@ -62,14 +63,14 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
 
   #### Updating a Quaternion
 
-  It's enitrely possible to just store an angle and an axis and create a quaternion on each frame,
-  but the best quality of Quaternions is their ability to compose rotations without fear of gimbal
+  It's entirely possible to just store an angle and an axis and create a quaternion on each frame,
+  but the best quality of quaternions is their ability to compose rotations without fear of gimbal
   lock.
 
-  Multiplying two quatrnions, compounds two rotations in a similar way to vector addition, but it is
-  not communitive like vecter addition. It's a relatively cheap operation to perform. The following
-  example uses [`Quat::from_two_axis()`](#method.from_two_axis), take a look at it's documentation.
-  Note how the order of rotations affect the result.
+  Multiplying two quaternions compounds two rotations in a similar way to vector addition, but it
+  is not commutative like vector addition. It's a relatively cheap operation to perform. The
+  following example uses [`Quat::from_two_axis()`](#method.from_two_axis); take a look at its
+  documentation. Note how the order of rotations affect the result.
 
   ```
   # use homebrew_glm::{Quat, Vec3};
@@ -87,24 +88,24 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
   assert!(vertex_rotated_b.equals(Vec3::new(3.0, -1.0, -2.0)));
   ```
 
-  Notice how the resulting vectors are just rearanged and their signs changed? That is because we're
-  only doing quater turn rotations. Follow the [right hand rule](https://en.wikipedia.org/wiki/Right-hand_rule)
+  Notice how the resulting vectors are just rearranged and their signs changed? That is because
+  we're only doing quarter turn rotations. Follow the [right hand rule](https://en.wikipedia.org/wiki/Right-hand_rule)
   yourself (with your thumb to the right as the X axis, index finger pointing up as the Y axis, and
-  your midding finger pointing towards you as the Z axis) and see if you can come to the same values
-  as we did.
+  your middle finger pointing towards you as the Z axis) and see if you can come to the same values
+  as I did.
 
   What this shows is if your current orientation is represented by a [`Quat`](#), and you want to
   rotate the object by another [`Quat`](#), all you have to do is multiply this orientation by a
-  rotation. Alternatively you can use [`.rotate()`](#method.rotate) if you're used to that diction.
+  rotation. Alternatively you can use [`.rotate()`](#method.rotate), if you're used to that syntax.
 
-  #### Retreiving and Representing a Rotation with Quat
+  #### Retrieving and Representing a Rotation with Quat
 
-  The most common use case for Quaternions is storing them as a represention of a rotation for a
-  particular instance. When it comes time for building a model for this instance, we retreive the
-  instances position, scale, and its rotation.
+  The most common use case for quaternions is storing them as a represention of a rotation for a
+  particular instance. When it comes to building a model for this instance, we retrieve the
+  position, scale, and its rotation.
 
-  To reteive a rotation matrix from a Quaternion, use either [`quat.mat4()`](#method.mat4)
-  or this crates glm function [`rotate()`](./fn.rotate.html).
+  To retieve a rotation matrix from a Quaternion, use either [`quat.mat4()`](#method.mat4)
+  or this crate's glm function [`rotate()`](./fn.rotate.html).
   ```
   # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
   # let my_position = Vec3::zero();
@@ -116,11 +117,11 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
   ## Default
 
   [Default](https://doc.rust-lang.org/nightly/core/default/trait.Default.html) is implemented for
-  ease of use with ECS libraries like [specs](https://docs.rs/specs/0.16.1/specs/) that require
-  components to implement Default.
+  ease of use with Entity Component System libraries like [specs](https://docs.rs/specs/0.16.1/specs/)
+  that require components to implement Default.
 
   [`Quat::default()`](#method.default) is equivalent to [`Quat::identity()`](#method.identity) and
-  we recommend using that function instead to make your code more explicit.
+  I recommend using that function instead to make your code more explicit.
 */
 
 // note: layout is [ x, y, z, w]
@@ -133,7 +134,7 @@ impl Quat {
     /// Create a quaternion with explicitly set x, y, z, and w components
     ///
     /// Normally you don't want to create your own, as Quat should be normalized whenever possible.
-    /// If you do use this function we recommend using [`.normalize()`](#method.normalize).
+    /// If you do use this function I recommend using [`.normalize()`](#method.normalize).
     ///
     /// Consider instead [`unit()`](#method.unit), which is equivalent to
     /// `Quat::new(x, y, z, w).normalize()`
@@ -278,8 +279,8 @@ impl Quat {
 
     /// Receive the rotation at a particular point in time in a Spherical Linear Interpolation
     ///
-    /// This function calls `.acos()` which can be expensive, so reserve this for special occasions.
-    /// Consider using it's cheaper cousin [`lerp()`](#method.lerp) if you know for sure the
+    /// This function calls `.acos()` which can be expensive, so reserve this for special occasions!
+    /// Consider using its cheaper cousin [`lerp()`](#method.lerp) if you know for sure the
     /// difference in rotation is small.
     pub fn slerp(&self, mut to: Quat, t: f32) -> Quat {
         let scale0: f32;
@@ -474,7 +475,7 @@ impl Quat {
         )
     }
 
-    /// Covert this Quat into a scalar and Vec3 tuple. Scalar is radians around the Vec3 axis.
+    /// Convert this Quat into a scalar and Vec3 tuple. Scalar is radians around the Vec3 axis.
     pub fn to_angle_axis(&self) -> (f32, Vec3) {
 
         let angle = 2.0 * self.w().acos();
@@ -502,7 +503,8 @@ impl Quat {
         Self::from_angle_axis(s, vec)
     }
 
-    /// Create a orientation looking from a `pos` to a `target` with an up vector to prevent rolling
+    /// Create an orientation looking from a `pos` to a `target` with an up vector to prevent
+    /// rolling
     ///
     /// See also: [`look_at()`](./fn.lookAt.html)
     pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Quat {

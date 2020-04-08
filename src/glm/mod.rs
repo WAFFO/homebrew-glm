@@ -52,7 +52,7 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
 
 /// Build a *Projection Matrix* that transforms vertices from eye space to the clip space
 ///
-/// - `fovy`: field of view in *radians* along the y axis
+/// - `fovy`: field of view in **radians** along the y axis
 /// - `aspect`: aspect ratio of the view
 /// - `near`: minimum distance something is visible
 /// - `far`: maximum distance something is visible
@@ -125,7 +125,7 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
         xaxis.x(), yaxis.x(), -zaxis.x(), 0.0,
         xaxis.y(), yaxis.y(), -zaxis.y(), 0.0,
         xaxis.z(), yaxis.z(), -zaxis.z(), 0.0,
-        -pos.dot(xaxis), -pos.dot(yaxis), pos.dot(zaxis), 1.0,
+        pos.dot(xaxis) * -1.0, pos.dot(yaxis) * -1.0, pos.dot(zaxis) * -1.0, 1.0,
     ])
 }
 

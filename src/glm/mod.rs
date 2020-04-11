@@ -50,9 +50,53 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
     Mat4::new(col1, col2, col3, col4)
 }
 
-/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space
+/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space with
+/// defined dimensions of the canvas
 ///
-/// - `fovy`: field of view in **radians** along the y axis
+/// - `left`: value furthest on the left on the X axis
+/// - `right`: value furthest on the right on the X axis
+/// - `bottom`: value furthest down on the Y axis
+/// - `top`: value furthest up on the Y axis
+/// - `near`: value closest to the viewer on the Z axis
+/// - `far`: value furthest from the viewer on the Z axis
+///
+/// ## Where is this typically used?
+///
+/// Consider this GLSL code:
+///
+/// ```glsl
+/// gl_Position = u_projection * view * v_position;
+/// ```
+///
+/// The projection matrix is typically the left most matrix, it transforms the result of the current
+/// vertex multiplied by the [view](./fn.lookAt.html) matrix, into `gl_Position`.
+///
+/// Note:`gl_Position` is a special variable GLSL expects to be clip space coordinates.
+///
+/// ## GLM equivalent function
+///
+/// GLM documentation:
+pub fn perspective(left: f32, right: f32, bottom: f32, top: f32, near: f32, far: f32) -> Mat4 {
+
+    let w = (2.0 * near) / (right - left);
+    let h = (2.0 * near) / (top - bottom);
+    let wq = (right + left) / (right - left);
+    let hq = (top + bottom) / (top - bottom);
+    let q = -(far + near) / (far - near);
+    let qn = -2.0 * (far * near) / (far - near);
+
+    Mat4::mat4([
+          w, 0.0, 0.0,  0.0,
+        0.0,   h, 0.0,  0.0,
+         wq,  hq,   q, -1.0,
+        0.0, 0.0,  qn,  0.0,
+    ])
+}
+
+/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space with a
+/// defined field of view across the Y axis
+///
+/// - `fov_y`: field of view in **radians** along the Y axis
 /// - `aspect`: aspect ratio of the view
 /// - `near`: minimum distance something is visible
 /// - `far`: maximum distance something is visible
@@ -73,8 +117,8 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
 /// ## GLM equivalent function
 ///
 /// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga283629a5ac7fb9037795435daf22560f](https://glm.g-truc.net/0.9.4/api/a00151.html#ga283629a5ac7fb9037795435daf22560f)
-pub fn perspective(fovy: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
-    let xy_max = near * fovy;
+pub fn perspective_fov(fov_y: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
+    let xy_max = near * fov_y;
 
     let depth = far - near;
     let q = -(far + near) / depth;

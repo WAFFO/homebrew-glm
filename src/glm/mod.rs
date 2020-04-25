@@ -130,7 +130,7 @@ pub fn perspective(left: f32, right: f32, bottom: f32, top: f32, near: f32, far:
 ///
 /// ## GLM equivalent function
 ///
-/// `perspective_fov()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#gac2bbb4ae38c7cc549feefae5406517d7](https://glm.g-truc.net/0.9.4/api/a00151.html#gac2bbb4ae38c7cc549feefae5406517d7)
+/// `perspectiveFov()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#gac2bbb4ae38c7cc549feefae5406517d7](https://glm.g-truc.net/0.9.4/api/a00151.html#gac2bbb4ae38c7cc549feefae5406517d7)
 pub fn perspective_fov(fov_y: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
     let xy_max = near * fov_y;
 
@@ -222,7 +222,7 @@ pub fn perspective_ortho(left: f32, right: f32, bottom: f32, top: f32, near: f32
 ///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#gae2dca3785b6d5796e876114af58a60a1](https://glm.g-truc.net/0.9.4/api/a00151.html#gae2dca3785b6d5796e876114af58a60a1)
+/// `lookAt()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#gae2dca3785b6d5796e876114af58a60a1](https://glm.g-truc.net/0.9.4/api/a00151.html#gae2dca3785b6d5796e876114af58a60a1)
 pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
     let zaxis: Vec3 = (target - pos).normalize();
     let xaxis = zaxis.cross(up).normalize();
@@ -272,7 +272,7 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 ///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga8925161ecc1767957900c5ca8b922dc4](https://glm.g-truc.net/0.9.4/api/a00151.html#ga8925161ecc1767957900c5ca8b922dc4)
+/// `translate()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga8925161ecc1767957900c5ca8b922dc4](https://glm.g-truc.net/0.9.4/api/a00151.html#ga8925161ecc1767957900c5ca8b922dc4)
 pub fn translate(t: Vec3) -> Mat4 {
     Mat4::mat4([
         1.0,  0.0,  0.0, 0.0,
@@ -320,7 +320,7 @@ pub fn translate(t: Vec3) -> Mat4 {
 ///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#gaacb9cbe8f93a8fef9dc3e25559df19c0](https://glm.g-truc.net/0.9.4/api/a00151.html#gaacb9cbe8f93a8fef9dc3e25559df19c0)
+/// `rotate()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#gaacb9cbe8f93a8fef9dc3e25559df19c0](https://glm.g-truc.net/0.9.4/api/a00151.html#gaacb9cbe8f93a8fef9dc3e25559df19c0)
 pub fn rotate(q: Quat) -> Mat4 {
     q.mat4()
 }
@@ -367,7 +367,7 @@ pub fn rotate(q: Quat) -> Mat4 {
 ///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.3/api/a00199.html#gaaadca0c077515d56955f3c662a3a3c7f](https://glm.g-truc.net/0.9.3/api/a00199.html#gaaadca0c077515d56955f3c662a3a3c7f)
+/// `rotateX()`: [https://glm.g-truc.net/0.9.3/api/a00199.html#gaaadca0c077515d56955f3c662a3a3c7f](https://glm.g-truc.net/0.9.3/api/a00199.html#gaaadca0c077515d56955f3c662a3a3c7f)
 pub fn rotate_x(f: f32) -> Mat4 {
     Mat4::mat4([
         1.0, 0.0, 0.0, 0.0,
@@ -419,7 +419,7 @@ pub fn rotate_x(f: f32) -> Mat4 {
 ///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.3/api/a00199.html#gacffa0ae7f32f4e2ee7bc1dc0ed290d45](https://glm.g-truc.net/0.9.3/api/a00199.html#gacffa0ae7f32f4e2ee7bc1dc0ed290d45)
+/// `rotateY()`: [https://glm.g-truc.net/0.9.3/api/a00199.html#gacffa0ae7f32f4e2ee7bc1dc0ed290d45](https://glm.g-truc.net/0.9.3/api/a00199.html#gacffa0ae7f32f4e2ee7bc1dc0ed290d45)
 pub fn rotate_y(f: f32) -> Mat4 {
     Mat4::mat4([
         f.cos(), 0.0, -f.sin(), 0.0,
@@ -471,7 +471,7 @@ pub fn rotate_y(f: f32) -> Mat4 {
 ///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.3/api/a00199.html#ga105c77751b4ab56c491334655751e0af](https://glm.g-truc.net/0.9.3/api/a00199.html#ga105c77751b4ab56c491334655751e0af)
+/// `rotateZ()`: [https://glm.g-truc.net/0.9.3/api/a00199.html#ga105c77751b4ab56c491334655751e0af](https://glm.g-truc.net/0.9.3/api/a00199.html#ga105c77751b4ab56c491334655751e0af)
 pub fn rotate_z(f: f32) -> Mat4 {
     Mat4::mat4([
         f.cos(), f.sin(), 0.0, 0.0,
@@ -517,7 +517,7 @@ pub fn rotate_z(f: f32) -> Mat4 {
 ///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga223e08009f1cab54651200b81e91981c](https://glm.g-truc.net/0.9.4/api/a00151.html#ga223e08009f1cab54651200b81e91981c)
+/// `scale()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga223e08009f1cab54651200b81e91981c](https://glm.g-truc.net/0.9.4/api/a00151.html#ga223e08009f1cab54651200b81e91981c)
 pub fn scale(s: Vec3) -> Mat4 {
     Mat4::mat4([
         s[0],  0.0,  0.0, 0.0,

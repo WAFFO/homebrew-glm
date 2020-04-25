@@ -50,8 +50,7 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
     Mat4::new(col1, col2, col3, col4)
 }
 
-/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space with
-/// defined dimensions of the canvas
+/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space
 ///
 /// - `left`: value furthest on the left on the X axis
 /// - `right`: value furthest on the right on the X axis
@@ -73,9 +72,17 @@ pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
 ///
 /// Note:`gl_Position` is a special variable GLSL expects to be clip space coordinates.
 ///
+/// ## Note about OpenGL behavior
+///
+/// Much to the confusion of many programmers, OpenGL interprets the positive Z axis to point
+/// **away** from the screen, and thus is actually left-handed. This is confusing as for the rest of
+/// this library we treat positive Z as being towards the screen, this is done to uphold the right
+/// hand rule. For our purposes it's safe to continue thinking of positive Z as pointing towards the
+/// screen, just know that when we translate into clip space, we flip the Z axis.
+///
 /// ## GLM equivalent function
 ///
-/// GLM documentation:
+/// `perspective()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga283629a5ac7fb9037795435daf22560f](https://glm.g-truc.net/0.9.4/api/a00151.html#ga283629a5ac7fb9037795435daf22560f)
 pub fn perspective(left: f32, right: f32, bottom: f32, top: f32, near: f32, far: f32) -> Mat4 {
 
     let w = (2.0 * near) / (right - left);
@@ -93,8 +100,7 @@ pub fn perspective(left: f32, right: f32, bottom: f32, top: f32, near: f32, far:
     ])
 }
 
-/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space with a
-/// defined field of view across the Y axis
+/// Build a *Projection Matrix* that transforms vertices from eye space to the clip space
 ///
 /// - `fov_y`: field of view in **radians** along the Y axis
 /// - `aspect`: aspect ratio of the view
@@ -114,9 +120,17 @@ pub fn perspective(left: f32, right: f32, bottom: f32, top: f32, near: f32, far:
 ///
 /// Note:`gl_Position` is a special variable GLSL expects to be clip space coordinates.
 ///
+/// ## Note about OpenGL behavior
+///
+/// Much to the confusion of many programmers, OpenGL interprets the positive Z axis to point
+/// **away** from the screen, and thus is actually left-handed. This is confusing as for the rest of
+/// this library we treat positive Z as being towards the screen, this is done to uphold the right
+/// hand rule. For our purposes it's safe to continue thinking of positive Z as pointing towards the
+/// screen, just know that when we translate into clip space, we flip the Z axis.
+///
 /// ## GLM equivalent function
 ///
-/// GLM documentation: [https://glm.g-truc.net/0.9.4/api/a00151.html#ga283629a5ac7fb9037795435daf22560f](https://glm.g-truc.net/0.9.4/api/a00151.html#ga283629a5ac7fb9037795435daf22560f)
+/// `perspective_fov()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#gac2bbb4ae38c7cc549feefae5406517d7](https://glm.g-truc.net/0.9.4/api/a00151.html#gac2bbb4ae38c7cc549feefae5406517d7)
 pub fn perspective_fov(fov_y: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
     let xy_max = near * fov_y;
 
@@ -133,6 +147,48 @@ pub fn perspective_fov(fov_y: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
         0.0, h, 0.0, 0.0,
         0.0, 0.0, q, -1.0,
         0.0, 0.0, qn, 0.0,
+    ])
+}
+
+/// Build a Orthographic *Projection Matrix* that transforms vertices from eye space to the clip
+/// space
+///
+/// - `left`: value furthest on the left on the X axis
+/// - `right`: value furthest on the right on the X axis
+/// - `bottom`: value furthest down on the Y axis
+/// - `top`: value furthest up on the Y axis
+/// - `near`: value closest to the viewer on the Z axis
+/// - `far`: value furthest from the viewer on the Z axis
+///
+/// ## Where is this typically used?
+///
+/// An orthographic projection matrix is different from a regular
+///
+/// ## Note about OpenGL behavior
+///
+/// Much to the confusion of many programmers, OpenGL interprets the positive Z axis to point
+/// **away** from the screen, and thus is actually left-handed. This is confusing as for the rest of
+/// this library we treat positive Z as being towards the screen, this is done to uphold the right
+/// hand rule. For our purposes it's safe to continue thinking of positive Z as pointing towards the
+/// screen, just know that when we translate into clip space, we flip the Z axis.
+///
+/// ## GLM equivalent function
+///
+/// `ortho()`: [https://glm.g-truc.net/0.9.4/api/a00151.html#gaf039a9f8d24e4bf39d30b7d692c1b8c3](https://glm.g-truc.net/0.9.4/api/a00151.html#gaf039a9f8d24e4bf39d30b7d692c1b8c3)
+pub fn perspective_ortho(left: f32, right: f32, bottom: f32, top: f32, near: f32, far: f32) -> Mat4 {
+    let w = 1.0 / (right - left);
+    let h = 1.0 / (top - bottom);
+    let p = 1.0 / (far - near);
+    
+    let x = (right + left) * -w;
+    let y = (top + bottom) * -h;
+    let z = (far + near) * -p;
+    
+    Mat4::mat4([
+        2*w, 0.0,  0.0, 0.0,
+        0.0, 2*h,  0.0, 0.0,
+        0.0, 0.0, -2*p, 0.0,
+          x,   y,    z, 1.0,
     ])
 }
 

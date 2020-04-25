@@ -5,15 +5,18 @@
 
   This library is based on the C OpenGL library [GLM](https://glm.g-truc.net/). That means:
 
-  - Matrices are Column-Major
-  - Math follows the right-hand rule
-  - Z points towards the screen (up until the projection matrix)
+  - Matrices are [Column-Major](https://en.wikipedia.org/wiki/Row-_and_column-major_order)
+    (data is stored by column, not row)
+  - Transformations flow from right to left (vectors need to be on the right of a matrix)
+  - Math follows the [right-hand rule](https://en.wikipedia.org/wiki/Right-hand_rule)
+  - Y points up, and Z points towards the screen
+    (at least until the projection matrix, see [perspective_fov](./fn.perspective_fov.html))
 
   ## Goals for this library
 
   This library was created with these 4 goals in mind:
 
-  #### Straight Forward
+  #### • Straight Forward
 
   This library should be _simple_ and _easy to use_. Types aren't heavily abstracted, so any
   compilation errors encountered will be easy to understand, and what types a function requires
@@ -22,17 +25,18 @@
   reference. This way we leverage the power of Rust and let the compiler optimize the memory
   allocation.
 
-  #### IDE Friendly
+  #### • IDE Friendly
 
-  Important functionality should not be hidden behind macros or aliases. We want IDEs to be able to
-  easily identify the outcome of operators and what functions are available to them.
+  Important functionality should not be hidden behind macros, aliases, or layers of types. I want
+  IDEs to be able to easily identify the outcome of operators and what functions are available to
+  them.
 
-  #### Complete Documentation
+  #### • Complete Documentation
 
   This goes beyond just giving descriptions for functions, by explaining the finer details of
   complicated functionality and application. Giving examples where necessary.
 
-  #### Lightweight
+  #### • Lightweight
 
   No dependencies, what you see here is what you get. Code is fast and efficient.
 

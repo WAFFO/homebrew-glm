@@ -162,7 +162,14 @@ pub fn perspective_fov(fov_y: f32, aspect: f32, near: f32, far: f32) -> Mat4 {
 ///
 /// ## Where is this typically used?
 ///
-/// An orthographic projection matrix is different from a regular
+/// An orthographic projection matrix is different from a regular perspective matrix that uses a
+/// frustum. A regular perspective matrix will create the illusion of objects being smaller the
+/// further away they are from the viewpoint, and objects larger when closer to the viewpoint.
+/// Instead of a frustum, orthographic projection uses a rectangular prism, nothing grows in size
+/// based on the Z axis, near or far the size is consistent.
+///
+/// This is useful more often for 3D tools where it's beneficial for a user to judge the size of
+/// objects without their distance affecting the size.
 ///
 /// ## Note about OpenGL behavior
 ///
@@ -185,10 +192,10 @@ pub fn perspective_ortho(left: f32, right: f32, bottom: f32, top: f32, near: f32
     let z = (far + near) * -p;
     
     Mat4::mat4([
-        2*w, 0.0,  0.0, 0.0,
-        0.0, 2*h,  0.0, 0.0,
-        0.0, 0.0, -2*p, 0.0,
-          x,   y,    z, 1.0,
+        2.0 * w, 0.0,  0.0, 0.0,
+        0.0, 2.0 * h,  0.0, 0.0,
+        0.0, 0.0, -2.0 * p, 0.0,
+          x,   y,        z, 1.0,
     ])
 }
 

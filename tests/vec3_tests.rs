@@ -13,7 +13,8 @@ fn index() {
 #[test]
 fn index_mut() {
     let mut v = Vec3::new(1.0, 2.0, 3.0);
-    assert_eq!(3.0, v[2]);
+    v[2] = 6.0;
+    assert_eq!(6.0, v[2]);
     let u = &mut v;
     u[1] = 9.9;
     assert_eq!(9.9, u[1]);

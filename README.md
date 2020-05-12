@@ -1,4 +1,6 @@
-# homebrew-glm
+# sawd-glm
+
+Simple and well documented.
 
 This is a work in progress.
 

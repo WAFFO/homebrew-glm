@@ -298,7 +298,7 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 /// This is typically used when building the model of an entity.
 ///
 /// ```
-///  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+///  # use sawd_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
 ///  # let my_position = Vec3::zero();
 ///  # let my_rotation = Quat::identity();
 ///  # let my_scale = Vec3::one();
@@ -316,7 +316,7 @@ pub fn look_at(pos: Vec3, target: Vec3, up: Vec3) -> Mat4 {
 /// vectors components. This is how we set the position of points in the world space.
 ///
 /// ```
-/// # use homebrew_glm::{translate, Vec3, Vec4};
+/// # use sawd_glm::{translate, Vec3, Vec4};
 /// let vec = Vec4::new(2.0, 2.0, 2.0, 1.0);
 /// let translate = translate(Vec3::new(1.0, -2.0, 0.5));
 /// let expected = Vec4::new(3.0, 0.0, 2.5, 1.0);
@@ -344,7 +344,7 @@ pub fn translate(t: Vec3) -> Mat4 {
 /// This is typically used when building the model of an entity.
 ///
 /// ```
-///  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+///  # use sawd_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
 ///  # let my_position = Vec3::zero();
 ///  # let my_rotation = Quat::identity();
 ///  # let my_scale = Vec3::one();
@@ -363,7 +363,7 @@ pub fn translate(t: Vec3) -> Mat4 {
 /// direction. The expected resulting vector is pointing in the positive X and positive Y direction.
 ///
 /// ```
-/// # use homebrew_glm::{rotate, Vec3, Vec4, Quat};
+/// # use sawd_glm::{rotate, Vec3, Vec4, Quat};
 /// # use std::f32::consts::PI;
 /// let vec = Vec4::new(0.0, 0.0, 1.0, 0.0);
 /// let rotation = rotate(Quat::from_angle_axis(PI/2.0, Vec3::new(-1.0, 1.0, 0.0).normalize()));
@@ -387,7 +387,7 @@ pub fn rotate(q: Quat) -> Mat4 {
 /// This is typically used when building the model of an entity.
 ///
 /// ```
-///  # use homebrew_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
+///  # use sawd_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
 ///  # let my_position = Vec3::zero();
 ///  # let my_rotation = Vec3::zero();
 ///  # let my_scale = Vec3::one();
@@ -410,7 +410,7 @@ pub fn rotate(q: Quat) -> Mat4 {
 /// the negative Y direction.
 ///
 /// ```
-/// # use homebrew_glm::{rotate_x, Vec4};
+/// # use sawd_glm::{rotate_x, Vec4};
 /// # use std::f32::consts::PI;
 /// let vec = Vec4::new(0.0, 0.0, 1.0, 0.0);
 /// let rotation = rotate_x(PI/2.0);
@@ -439,7 +439,7 @@ pub fn rotate_x(f: f32) -> Mat4 {
 /// This is typically used when building the model of an entity.
 ///
 /// ```
-///  # use homebrew_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
+///  # use sawd_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
 ///  # let my_position = Vec3::zero();
 ///  # let my_rotation = Vec3::zero();
 ///  # let my_scale = Vec3::one();
@@ -462,7 +462,7 @@ pub fn rotate_x(f: f32) -> Mat4 {
 /// the positive X direction.
 ///
 /// ```
-/// # use homebrew_glm::{rotate_y, Vec4};
+/// # use sawd_glm::{rotate_y, Vec4};
 /// # use std::f32::consts::PI;
 /// let vec = Vec4::new(0.0, 0.0, 1.0, 0.0);
 /// let rotation = rotate_y(PI/2.0);
@@ -491,7 +491,7 @@ pub fn rotate_y(f: f32) -> Mat4 {
 /// This is typically used when building the model of an entity.
 ///
 /// ```
-///  # use homebrew_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
+///  # use sawd_glm::{translate, rotate_x, rotate_y, rotate_z, scale, Vec3, Mat4, Quat};
 ///  # let my_position = Vec3::zero();
 ///  # let my_rotation = Vec3::zero();
 ///  # let my_scale = Vec3::one();
@@ -514,7 +514,7 @@ pub fn rotate_y(f: f32) -> Mat4 {
 /// the positive Y direction.
 ///
 /// ```
-/// # use homebrew_glm::{rotate_z, Vec4};
+/// # use sawd_glm::{rotate_z, Vec4};
 /// # use std::f32::consts::PI;
 /// let vec = Vec4::new(1.0, 0.0, 0.0, 0.0);
 /// let rotation = rotate_z(PI/2.0);
@@ -543,7 +543,7 @@ pub fn rotate_z(f: f32) -> Mat4 {
 /// This is typically used when building the model of an entity.
 ///
 /// ```
-///  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+///  # use sawd_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
 ///  # let my_position = Vec3::zero();
 ///  # let my_rotation = Quat::identity();
 ///  # let my_scale = Vec3::one();
@@ -561,7 +561,7 @@ pub fn rotate_z(f: f32) -> Mat4 {
 /// equivalent to multiplying each component by a different scalar.
 ///
 /// ```
-/// # use homebrew_glm::{scale, Vec3, Vec4};
+/// # use sawd_glm::{scale, Vec3, Vec4};
 /// let vec = Vec4::new(2.0, 2.0, 2.0, 0.0);
 /// let scale = scale(Vec3::new(1.0, -2.0, 0.5));
 /// let expected = Vec4::new(2.0, -4.0, 1.0, 0.0);

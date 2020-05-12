@@ -125,7 +125,7 @@ impl Vec3 {
     /// Receive a normalization of Vec3
     ///
     /// ```rust
-    /// # use homebrew_glm::{Vec3, assert_eq_float};
+    /// # use sawd_glm::{Vec3, assert_eq_float};
     /// let v = Vec3::new(1.0, 2.0, -0.5).normalize();
     /// assert_eq_float!(1.0, v.length());
     /// ```
@@ -158,7 +158,7 @@ impl Vec3 {
     }
 
     /// ```
-    /// # use homebrew_glm::Vec3;
+    /// # use sawd_glm::Vec3;
     /// let v = Vec3::all(1.5);
     /// assert!(v.is_perpendicular(v.perpendicular()));
     /// ```

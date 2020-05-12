@@ -9,7 +9,7 @@ use crate::{Vec4, Mat3, NEAR_ZERO};
  This means data is stored and retrieved by column, not row. You can retrieve by a tuple like so:
 
  ```
- # use homebrew_glm::Mat4;
+ # use sawd_glm::Mat4;
  # let my_matrix = Mat4::zero();
  # let column: usize = 0;
  # let row: usize = 0;
@@ -19,7 +19,7 @@ use crate::{Vec4, Mat3, NEAR_ZERO};
  or if you can do the math ahead of time and retreive by the index:
 
  ```
- # use homebrew_glm::Mat4;
+ # use sawd_glm::Mat4;
  # let my_matrix = Mat4::zero();
  # let index: usize = 0;
  let value: f32 = my_matrix[index];

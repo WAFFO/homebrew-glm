@@ -128,7 +128,7 @@ impl Vec4 {
     /// Receive a normalization of Vec4
     ///
     /// ```rust
-    /// # use homebrew_glm::{assert_eq_float, Vec4};
+    /// # use sawd_glm::{assert_eq_float, Vec4};
     /// let v = Vec4::new(1.0, 2.0, -0.5, 0.1).normalize();
     /// assert_eq_float!(1.0, v.length());
     /// ```

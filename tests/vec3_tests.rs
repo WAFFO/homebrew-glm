@@ -1,6 +1,6 @@
-extern crate homebrew_glm;
+extern crate sawd_glm;
 
-use homebrew_glm::Vec3;
+use sawd_glm::Vec3;
 
 #[test]
 fn index() {

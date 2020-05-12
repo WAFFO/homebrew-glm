@@ -24,7 +24,7 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
   specific orientation.
 
   ```
-  # use homebrew_glm::{Quat, Vec3};
+  # use sawd_glm::{Quat, Vec3};
   # use std::f32::consts::PI;
   let axis = Vec3::new(1.0, 1.0, 0.0).normalize();
   let rotation = Quat::from_angle_axis(PI/2.0, axis);
@@ -41,7 +41,7 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
   into a [`Vec4`](./struct.Vec4.html), and multiplying those two
 
   ```
-  # use homebrew_glm::{Quat, Vec3, Vec4, rotate};
+  # use sawd_glm::{Quat, Vec3, Vec4, rotate};
   # use std::f32::consts::PI;
   # let axis = Vec3::new(1.0, 1.0, 0.0).normalize();
   # let rotation = Quat::from_angle_axis(PI/2.0, axis);
@@ -73,7 +73,7 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
   documentation. Note how the order of rotations affect the result.
 
   ```
-  # use homebrew_glm::{Quat, Vec3};
+  # use sawd_glm::{Quat, Vec3};
   # use std::f32::consts::PI;
   let rotation_z2y = Quat::from_two_axis(Vec3::Z_AXIS, Vec3::Y_AXIS);
   let rotation_y2x = Quat::from_two_axis(Vec3::Y_AXIS, Vec3::X_AXIS);
@@ -107,7 +107,7 @@ use crate::{NEAR_ZERO, Mat4, Vec3, Mat3, look_at, Vec4};
   To retieve a rotation matrix from a Quaternion, use either [`quat.mat4()`](#method.mat4)
   or this crate's glm function [`rotate()`](./fn.rotate.html).
   ```
-  # use homebrew_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+  # use sawd_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
   # let my_position = Vec3::zero();
   # let my_rotation = Quat::identity();
   # let my_scale = Vec3::one();
@@ -190,7 +190,7 @@ impl Quat {
     /// Receive a normalization of this Quat
     ///
     /// ```rust
-    /// # use homebrew_glm::{assert_eq_float, Quat};
+    /// # use sawd_glm::{assert_eq_float, Quat};
     /// let v = Quat::new(1.0, 2.0, -0.5, 0.1).normalize();
     /// assert_eq_float!(1.0, v.length());
     /// ```
@@ -349,7 +349,7 @@ impl Quat {
     /// to the `to` [`Vec3`](./struct.Vec3.html).
     ///
     /// ```
-    /// # use homebrew_glm::{Vec3, Quat};
+    /// # use sawd_glm::{Vec3, Quat};
     /// let from = Vec3::new(1.0, 0.0, 0.0);
     /// let to = Vec3::new(0.0, 1.0, 1.0).normalize();
     /// let rotation = Quat::from_two_axis(from, to);
@@ -621,7 +621,7 @@ impl std::ops::IndexMut<usize> for Quat {
 /// Convert from a [`Mat4`](./struct.Mat4.html) rotation matrix to [`Quat`](./struct.Quat.html)
 ///
 /// ```
-/// # use homebrew_glm::{Vec3, Quat};
+/// # use sawd_glm::{Vec3, Quat};
 /// let q = Quat::from_angle_axis(0.4572, Vec3::new(-1.4, 2.3, 10.1));
 ///
 /// assert!(q.equals(Quat::from(q.mat4())));

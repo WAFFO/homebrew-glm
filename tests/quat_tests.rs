@@ -1,4 +1,4 @@
-extern crate homebrew_glm as glm;
+extern crate sawd_glm as glm;
 
 use glm::{Vec3, look_at, Quat};
 

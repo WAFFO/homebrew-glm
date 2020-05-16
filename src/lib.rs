@@ -1,5 +1,5 @@
 
-/*! # Homebrew-glm - Lightweight, Easy to Use, Graphics Focused Linear Algebra Library
+/*! # SaWD-glm - Simple and Well Documented, Graphics Focused Linear Algebra Library
 
   ## Quick facts
 

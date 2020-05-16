@@ -110,6 +110,74 @@ impl Mat3 {
         }
         true
     }
+
+    /// Receive the *absolute value* of each component in this Mat3
+    pub fn abs(&self) -> Mat3 {
+        Mat3([
+            self[0].abs(), self[1].abs(), self[2].abs(),
+            self[3].abs(), self[4].abs(), self[5].abs(),
+            self[6].abs(), self[7].abs(), self[8].abs(),
+        ])
+    }
+
+    /// Receive the aggregate average of each component
+    pub fn agg_avg(&self) -> f32 {
+        self.agg_sum() / 9.0
+    }
+
+    /// Receive the aggregate max of each component
+    pub fn agg_max(&self) -> f32 {
+        let mut m = self[0];
+        for i in 1..9 {
+            m = m.max(self[i]);
+        }
+        m
+    }
+
+    /// Receive the aggregate min of each component
+    pub fn agg_min(&self) -> f32 {
+        let mut m = self[0];
+        for i in 1..9 {
+            m = m.min(self[i]);
+        }
+        m
+    }
+
+    /// Receive the aggregate product of each component
+    pub fn agg_prod(&self) -> f32 {
+        let mut s = 1.0;
+        for i in 0..9 {
+            s *= self[i];
+        }
+        s
+    }
+
+    /// Receive the aggregate sum of each component
+    pub fn agg_sum(&self) -> f32 {
+        let mut s = 0.0;
+        for i in 0..9 {
+            s += self[i];
+        }
+        s
+    }
+
+    /// Receive a Mat3 with each component rounded up to the nearest integer
+    pub fn ceil(&self) -> Mat3 {
+        let mut m = Mat3::zero();
+        for i in 0..9 {
+            m[i] = self[i].ceil();
+        }
+        m
+    }
+
+    /// Receive a Mat3 clamped at some minimum and some maximum
+    pub fn clamp(&self, min: f32, max: f32) -> Mat3 {
+        let mut m = Mat3::zero();
+        for i in 0..9 {
+            m[i] = if self[i] < min { min } else if self[i] > max { max } else { self[i] };
+        }
+        m
+    }
 }
 
 impl std::ops::Index<usize> for Mat3 {

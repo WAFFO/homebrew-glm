@@ -92,6 +92,61 @@ impl Vec3 {
             && (self.z() - other.z()).abs() <= epsilon
     }
 
+    /// Receive the *absolute value* of each component in this Vec3
+    pub fn abs(&self) -> Vec3 {
+        Vec3([self[0].abs(), self[1].abs(), self[2].abs()])
+    }
+
+    /// Receive the aggregate average of each component
+    pub fn agg_avg(&self) -> f32 {
+        (self[0] + self[1] + self[2]) / 3.0
+    }
+
+    /// Receive the aggregate max of each component
+    pub fn agg_max(&self) -> f32 {
+        self[0].max(self[1]).max(self[2])
+    }
+
+    /// Receive the aggregate min of each component
+    pub fn agg_min(&self) -> f32 {
+        self[0].min(self[1]).min(self[2])
+    }
+
+    /// Receive the aggregate product of each component
+    pub fn agg_prod(&self) -> f32 {
+        self[0] * self[1] * self[2]
+    }
+
+    /// Receive the aggregate sum of each component
+    pub fn agg_sum(&self) -> f32 {
+        self[0] + self[1] + self[2]
+    }
+
+    /// Receive the angle between this Vec3 and another Vec3
+    pub fn angle(&self, other: Vec3) -> f32 {
+        let s = self.cross(other).length();
+        let c = self.dot(other);
+        s.atan2(c)
+    }
+
+    /// Receive a Vec3 with each component rounded up to the nearest integer
+    pub fn ceil(&self) -> Vec3 {
+        Vec3([
+            self[0].ceil(),
+            self[1].ceil(),
+            self[2].ceil(),
+        ])
+    }
+
+    /// Receive a Vec3 clamped at some minimum and some maximum
+    pub fn clamp(&self, min: f32, max: f32) -> Vec3 {
+        Vec3([
+            if self[0] < min { min } else if self[0] > max { max } else { self [0] },
+            if self[1] < min { min } else if self[1] > max { max } else { self [1] },
+            if self[2] < min { min } else if self[2] > max { max } else { self [2] },
+        ])
+    }
+
     /// Receive the *dot* product of this Vec3 and another Vec3
     ///
     /// This function is commutative

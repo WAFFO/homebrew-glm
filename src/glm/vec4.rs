@@ -106,10 +106,65 @@ impl Vec4 {
             && (self.w() - other.w()).abs() <= epsilon
     }
 
+    /// Receive the *absolute value* of each component in this Vec4
+    pub fn abs(&self) -> Vec4 {
+        Vec4([self[0].abs(), self[1].abs(), self[2].abs(), self[3].abs()])
+    }
+
+    /// Receive the aggregate average of each component
+    pub fn agg_avg(&self) -> f32 {
+        (self[0] + self[1] + self[2] + self[3]) / 4.0
+    }
+
+    /// Receive the aggregate max of each component
+    pub fn agg_max(&self) -> f32 {
+        self[0].max(self[1]).max(self[2]).max(self[3])
+    }
+
+    /// Receive the aggregate min of each component
+    pub fn agg_min(&self) -> f32 {
+        self[0].min(self[1]).min(self[2]).min(self[3])
+    }
+
+    /// Receive the aggregate product of each component
+    pub fn agg_prod(&self) -> f32 {
+        self[0] * self[1] * self[2] * self[3]
+    }
+
+    /// Receive the aggregate sum of each component
+    pub fn agg_sum(&self) -> f32 {
+        self[0] + self[1] + self[2] + self[3]
+    }
+
+    /// Receive the angle between this Vec4 and another Vec4
+    pub fn angle(&self, other: Vec4) -> f32 {
+        self.normalize().dot(other.normalize()).min(1.0).max(-1.0).acos()
+    }
+
+    /// Receive a Vec4 with each component rounded up to the nearest integer
+    pub fn ceil(&self) -> Vec4 {
+        Vec4([
+            self[0].ceil(),
+            self[1].ceil(),
+            self[2].ceil(),
+            self[3].ceil(),
+        ])
+    }
+
+    /// Receive a Vec4 clamped at some minimum and some maximum
+    pub fn clamp(&self, min: f32, max: f32) -> Vec4 {
+        Vec4([
+            if self[0] < min { min } else if self[0] > max { max } else { self [0] },
+            if self[1] < min { min } else if self[1] > max { max } else { self [1] },
+            if self[2] < min { min } else if self[2] > max { max } else { self [2] },
+            if self[3] < min { min } else if self[3] > max { max } else { self [3] },
+        ])
+    }
+
     /// Receive the *dot* product of this Vec4 and another Vec4
     ///
     /// This function is commutative
-    pub fn dot(&self, other: &Vec4) -> f32 {
+    pub fn dot(&self, other: Vec4) -> f32 {
         self[0] * other[0] + self[1] * other[1] + self[2] * other[2] + self[3] * other[3]
     }
 

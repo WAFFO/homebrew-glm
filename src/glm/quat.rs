@@ -177,6 +177,36 @@ impl Quat {
             || Vec4::from(*self * -1.0).equals_epsilon(Vec4::from(other), epsilon)
     }
 
+    /// Receive the *absolute value* of each component in this Quat
+    pub fn abs(&self) -> Quat {
+        Quat([self[0].abs(), self[1].abs(), self[2].abs(), self[3].abs()])
+    }
+
+    /// Receive the aggregate average of each component
+    pub fn agg_avg(&self) -> f32 {
+        (self[0] + self[1] + self[2] + self[3]) / 4.0
+    }
+
+    /// Receive the aggregate max of each component
+    pub fn agg_max(&self) -> f32 {
+        self[0].max(self[1]).max(self[2]).max(self[3])
+    }
+
+    /// Receive the aggregate min of each component
+    pub fn agg_min(&self) -> f32 {
+        self[0].min(self[1]).min(self[2]).min(self[3])
+    }
+
+    /// Receive the aggregate product of each component
+    pub fn agg_prod(&self) -> f32 {
+        self[0] * self[1] * self[2] * self[3]
+    }
+
+    /// Receive the aggregate sum of each component
+    pub fn agg_sum(&self) -> f32 {
+        self[0] + self[1] + self[2] + self[3]
+    }
+
     /// Receive the magnitude of this Quat, should always be 1.0
     ///
     /// This function is equivalent to [`length()`](#method.length)
@@ -618,15 +648,16 @@ impl std::ops::IndexMut<usize> for Quat {
 //------------------------------------------------------------------------------------------------//
 // FROM                                                                                           //
 //------------------------------------------------------------------------------------------------//
-/// Convert from a [`Mat4`](./struct.Mat4.html) rotation matrix to [`Quat`](./struct.Quat.html)
-///
-/// ```
-/// # use sawd_glm::{Vec3, Quat};
-/// let q = Quat::from_angle_axis(0.4572, Vec3::new(-1.4, 2.3, 10.1));
-///
-/// assert!(q.equals(Quat::from(q.mat4())));
-/// ```
+
 impl From<Mat4> for Quat {
+    /// Convert from a [`Mat4`](./struct.Mat4.html) rotation matrix to [`Quat`](./struct.Quat.html)
+    ///
+    /// ```
+    /// # use sawd_glm::{Vec3, Quat};
+    /// let q = Quat::from_angle_axis(0.4572, Vec3::new(-1.4, 2.3, 10.1));
+    ///
+    /// assert!(q.equals(Quat::from(q.mat4())));
+    /// ```
     fn from(m: Mat4) -> Self {
         let tr: f32 = m[0] + m[5] + m[10];
 
@@ -662,6 +693,13 @@ impl From<Mat4> for Quat {
             q[k] = (m[(i,k)] + m[(k,i)]) * s;
             Quat([ q[0], q[1], q[2], q[3] ])
         }
+    }
+}
+
+impl From<Vec4> for Quat {
+    /// Cast a Vec4 to a Quat, no transformations
+    fn from(f: Vec4) -> Self {
+        Quat::new(f[0], f[1], f[2], f[3])
     }
 }
 

@@ -201,6 +201,23 @@ impl Vec4 {
     pub fn bound(&self, bound: f32) -> Vec4 {
         *self % bound
     }
+
+    /// Receive a Vec4 that is perpendicular to this Vec4
+    ///
+    /// As there are infinite perpendicular Vectors for any given Vector, the result should be
+    /// treated as arbitrary.
+    pub fn perpendicular(&self) -> Vec4 {
+        Vec4::new(self[1], -self[0], self[3], -self[2])
+    }
+
+    /// ```
+    /// # use sawd_glm::Vec4;
+    /// let v = Vec4::new(10.4, -10.4, -10.4, -10.4);
+    /// assert!(v.is_perpendicular(v.perpendicular()));
+    /// ```
+    pub fn is_perpendicular(&self, other: Vec4) -> bool {
+        self.dot(other) < NEAR_ZERO
+    }
 }
 
 impl From<Vec3> for Vec4 {

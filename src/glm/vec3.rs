@@ -204,11 +204,12 @@ impl Vec3 {
     /// As there are infinite perpendicular Vectors for any given Vector, the result should be
     /// treated as arbitrary.
     pub fn perpendicular(&self) -> Vec3 {
+        // prevents a trivial solution
         if self[2] < self[0] {
-            Vec3::new(self[1],-self[0],0.0)
+            Vec3::new(self[1], -self[0], 0.0)
         }
         else {
-            Vec3::new(0.0,-self[2],self[1])
+            Vec3::new(0.0, -self[2], self[1])
         }
     }
 

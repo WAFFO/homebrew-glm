@@ -1,6 +1,6 @@
 extern crate sawd_glm as glm;
 
-use glm::{Vec3, look_at, Quat};
+use glm::{Vec3, Mat4, Quat};
 
 use std::f32::consts::PI;
 
@@ -22,7 +22,7 @@ pub fn look_at_test() {
     let position = Vec3::new(0.0, 0.0, 0.0);
     let target = Vec3::new(1.0, 1.0, 1.0);
 
-    let mat = look_at(position, target, Vec3::Y_AXIS);
+    let mat = Mat4::look_at(position, target, Vec3::Y_AXIS);
     let quat = Quat::look_at(position, target, Vec3::Y_AXIS);
 
     assert!(quat.mat4().equals(mat));

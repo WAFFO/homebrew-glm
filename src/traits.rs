@@ -1,25 +1,15 @@
-use crate::{GVec3, GVec4, Mat3, Mat4, GMat4, GMat3};
+use crate::{GVec3, GVec4, GMat3, GMat4};
 use std::fmt::{Debug, Display};
-use std::ops::{Add, Sub, AddAssign, SubAssign, Neg, Mul, MulAssign, Div, DivAssign, Rem, RemAssign};
+use std::ops::{AddAssign, SubAssign, MulAssign, DivAssign, RemAssign};
 
 /// Trait for scalars: f32 or f64
 pub trait Scalar:
     Debug +
     Display +
-    Copy +
-    Clone +
-    PartialEq +
-    PartialOrd +
-    Neg<Output = Self> +
-    Add<Output = Self> +
     AddAssign +
-    Sub<Output = Self> +
     SubAssign +
-    Mul<Output = Self> +
     MulAssign +
-    Div<Output = Self> +
     DivAssign +
-    Rem<Output = Self> +
     RemAssign +
     num_traits::Float +
     num_traits::cast::FromPrimitive

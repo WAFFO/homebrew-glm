@@ -42,7 +42,7 @@ use crate::traits::Scalar;
 /// into a [`Vec4`](./struct.Vec4.html), and multiplying those two
 ///
 /// ```
-/// # use sawd_glm::{Quat, Vec3, Vec4, rotate};
+/// # use sawd_glm::{Quat, Vec3, Vec4, Mat4};
 /// # use std::f32::consts::PI;
 /// # let axis = Vec3::new(1.0, 1.0, 0.0).normalize();
 /// # let rotation = Quat::from_angle_axis(PI/2.0, axis);
@@ -52,7 +52,7 @@ use crate::traits::Scalar;
 /// let rotated_vertex_mul: Vec3 = rotation * vertex;
 ///
 /// // Rotate via Mat4 multiplication (like with a model matrix)
-/// let model = rotate(rotation);
+/// let model = Mat4::rotate(rotation);
 /// let vertex_4d = Vec4::vec3_w(vertex, 0.0);
 /// let rotated_vertex_mat: Vec3 = (model * vertex_4d).xyz();
 ///
@@ -108,11 +108,11 @@ use crate::traits::Scalar;
 /// To retieve a rotation matrix from a Quaternion, use either [`quat.mat4()`](#method.mat4)
 /// or this crate's glm function [`rotate()`](./fn.rotate.html).
 /// ```
-/// # use sawd_glm::{translate, rotate, scale, Vec3, Mat4, Quat};
+/// # use sawd_glm::{Vec3, Mat4, Quat};
 /// # let my_position = Vec3::zero();
 /// # let my_rotation = Quat::identity();
 /// # let my_scale = Vec3::one();
-/// let model: Mat4 = translate(my_position) * rotate(my_rotation) * scale(my_scale);
+/// let model: Mat4 = Mat4::translate(my_position) * Mat4::rotate(my_rotation) * Mat4::scale(my_scale);
 /// ```
 ///
 /// ## Default
@@ -140,13 +140,13 @@ impl<T: Scalar> GQuat<T> {
     ///
     /// Consider instead [`unit()`](#method.unit), which is equivalent to
     /// `Quat::new(x, y, z, w).normalize()`
-    pub fn new(x: T, y: T, z: T, w: T) -> GQuat<T> { GQuat ( [ x, y, z, w] ) }
+    pub fn new(x: T, y: T, z: T, w: T) -> GQuat<T> { GQuat([x, y, z, w]) }
 
     /// Create a unit quaternion based on x, y, z, and w components
-    pub fn unit(x: T, y: T, z: T, w: T) -> GQuat<T> { GQuat ( [ x, y, z, w] ).normalize() }
+    pub fn unit(x: T, y: T, z: T, w: T) -> GQuat<T> { GQuat([x, y, z, w]).normalize() }
 
     /// Create a unit identity quaternion
-    pub fn identity() -> GQuat<T> { GQuat ( [T::zero(), T::zero(), T::zero(), T::one()] ) }
+    pub fn identity() -> GQuat<T> { GQuat([T::zero(), T::zero(), T::zero(), T::one()]) }
 
     /// Receive the x value
     pub fn x(&self) -> T { self.0[0] }
@@ -163,13 +163,13 @@ impl<T: Scalar> GQuat<T> {
     /// Receive the 'vector' portion of the quaternion
     ///
     /// Please note that this is **not** the same as the axis you are rotating around
-    pub fn xyz(&self) -> GVec3<T> { GVec3 ([self.0[0], self.0[1], self.0[2]]) }
+    pub fn xyz(&self) -> GVec3<T> { GVec3([self.0[0], self.0[1], self.0[2]]) }
 
     /// Test if this [`Quat`](./struct.Quat.html) is equals to another [`Quat`](./struct.Quat.html)
     /// for each component up to 1e-6
     pub fn equals(&self, other: GQuat<T>) -> bool {
         GVec4::from(*self).equals(GVec4::from(other))
-        || GVec4::from(*self * -T::one()).equals(GVec4::from(other))
+            || GVec4::from(*self * -T::one()).equals(GVec4::from(other))
     }
 
     /// Test if this [`Quat`](./struct.Quat.html) is equals to another [`Quat`](./struct.Vec3.html)
@@ -181,7 +181,7 @@ impl<T: Scalar> GQuat<T> {
 
     /// Receive the *absolute value* of each component in this Quat
     pub fn abs(&self) -> GQuat<T> {
-        GQuat ([self[0].abs(), self[1].abs(), self[2].abs(), self[3].abs()])
+        GQuat([self[0].abs(), self[1].abs(), self[2].abs(), self[3].abs()])
     }
 
     /// Receive the aggregate average of each component
@@ -212,7 +212,7 @@ impl<T: Scalar> GQuat<T> {
     /// Receive the magnitude of this Quat, should always be 1.0
     ///
     /// This function is equivalent to [`length()`](#method.length)
-    pub fn mag(&self) -> T { ( self[0].powi(2) + self[1].powi(2) + self[2].powi(2) + self[3].powi(2) ).sqrt() }
+    pub fn mag(&self) -> T { (self[0].powi(2) + self[1].powi(2) + self[2].powi(2) + self[3].powi(2)).sqrt() }
 
     /// Receive the length of this Quat, should always be 1.0
     ///
@@ -230,20 +230,19 @@ impl<T: Scalar> GQuat<T> {
         let mag = self.mag();
         if mag != T::zero() {
             *self / mag
-        }
-        else {
+        } else {
             *self
         }
     }
 
     /// Receive the conjugate of this Quat
     pub fn conjugate(&self) -> GQuat<T> {
-        GQuat ( [
+        GQuat([
             -self.x(), // x
             -self.y(), // y
             -self.z(), // z
-             self.w(), // w
-        ] )
+            self.w(), // w
+        ])
     }
 
     /// Receive the inverse of this Quat
@@ -252,9 +251,9 @@ impl<T: Scalar> GQuat<T> {
     pub fn inverse(&self) -> GQuat<T> {
         let inv_norm = T::one() / (
             self.w() * self.w() +
-            self.x() * self.x() +
-            self.y() * self.y() +
-            self.z() * self.z() );
+                self.x() * self.x() +
+                self.y() * self.y() +
+                self.z() * self.z());
         self.conjugate() * inv_norm
     }
 
@@ -274,9 +273,9 @@ impl<T: Scalar> GQuat<T> {
         let wy = self.w() * y2;
         let wz = self.w() * z2;
         GMat3([
-            T::one() - yy - zz,       xy + wz,       xz - wy,
-                  xy - wz, T::one() - xx - zz,       yz + wx,
-                  xz + wy,       yz - wx, T::one() - xx - yy,
+            T::one() - yy - zz, xy + wz, xz - wy,
+            xy - wz, T::one() - xx - zz, yz + wx,
+            xz + wy, yz - wx, T::one() - xx - yy,
         ])
     }
 
@@ -295,13 +294,12 @@ impl<T: Scalar> GQuat<T> {
         let wx = self.w() * x2;
         let wy = self.w() * y2;
         let wz = self.w() * z2;
-        GMat4 ([
-            T::one() - yy - zz,       xy + wz,       xz - wy, T::zero(),
-                  xy - wz, T::one() - xx - zz,       yz + wx, T::zero(),
-                  xz + wy,       yz - wx, T::one() - xx - yy, T::zero(),
-                      T::zero(),           T::zero(),           T::zero(), T::one(),
+        GMat4([
+            T::one() - yy - zz, xy + wz, xz - wy, T::zero(),
+            xy - wz, T::one() - xx - zz, yz + wx, T::zero(),
+            xz + wy, yz - wx, T::one() - xx - yy, T::zero(),
+            T::zero(), T::zero(), T::zero(), T::one(),
         ])
-
     }
 
     /// Rotate this Quat by the rotation of another Quat
@@ -398,15 +396,14 @@ impl<T: Scalar> GQuat<T> {
 
         // check if parallel
         if cost > T::cast(0.99999) {
-            return GQuat::new(T::one(), T::zero(), T::zero(), T::zero())
-        }
-        else if cost < -T::cast(0.99999) {     // check if opposite
+            return GQuat::new(T::one(), T::zero(), T::zero(), T::zero());
+        } else if cost < T::cast(-0.99999) {     // check if opposite
             // check if we can use cross product of from vector with [1, 0, 0]
             tx = T::zero();
             ty = from.x();
             tz = -from.y();
 
-            let len = (ty*ty + tz*tz).sqrt();
+            let len = (ty * ty + tz * tz).sqrt();
 
             if len < T::cast(NEAR_ZERO) {
                 // nope! we need cross product of from vector with [0, 1, 0]
@@ -416,13 +413,13 @@ impl<T: Scalar> GQuat<T> {
             }
 
             // normalize
-            dist = T::one() / (tx*tx + ty*ty + tz*tz).sqrt();
+            dist = T::one() / (tx * tx + ty * ty + tz * tz).sqrt();
 
             tx *= dist;
             ty *= dist;
             tz *= dist;
 
-            return GQuat::new(T::zero(), tx, ty, tz)
+            return GQuat::new(T::zero(), tx, ty, tz);
         }
 
         // ... else we can just cross two vectors
@@ -430,7 +427,7 @@ impl<T: Scalar> GQuat<T> {
         ty = from.z() * to.x() - from.x() * to.z();
         tz = from.x() * to.y() - from.y() * to.x();
 
-        dist = T::one() / (tx*tx + ty*ty + tz*tz).sqrt();
+        dist = T::one() / (tx * tx + ty * ty + tz * tz).sqrt();
 
         tx *= dist;
         ty *= dist;
@@ -453,12 +450,12 @@ impl<T: Scalar> GQuat<T> {
     ///
     /// Rotation order is Z -> Y -> X
     pub fn from_euler_xyz_rotation(x_rotation: T, y_rotation: T, z_rotation: T) -> GQuat<T> {
-        let cr = (z_rotation/T::cast(2.0)).cos();
-        let cp = (y_rotation/T::cast(2.0)).cos();
-        let cy = (x_rotation/T::cast(2.0)).cos();
-        let sr = (z_rotation/T::cast(2.0)).sin();
-        let sp = (y_rotation/T::cast(2.0)).sin();
-        let sy = (x_rotation/T::cast(2.0)).sin();
+        let cr = (z_rotation / T::cast(2.0)).cos();
+        let cp = (y_rotation / T::cast(2.0)).cos();
+        let cy = (x_rotation / T::cast(2.0)).cos();
+        let sr = (z_rotation / T::cast(2.0)).sin();
+        let sp = (y_rotation / T::cast(2.0)).sin();
+        let sy = (x_rotation / T::cast(2.0)).sin();
         let cycp = cy * cp;
         let sysp = sy * sp;
         let cysp = cy * sp;
@@ -478,7 +475,7 @@ impl<T: Scalar> GQuat<T> {
         // scalar
         let scale = (angle / T::cast(2.0)).sin();
 
-        GQuat ([
+        GQuat([
             axis[0] * scale,
             axis[1] * scale,
             axis[2] * scale,
@@ -491,11 +488,11 @@ impl<T: Scalar> GQuat<T> {
     ///
     /// Note: Euler is very strange, especially around PI/2. Quaternions are highly recommended.
     pub fn to_euler_xyz_rotation(&self) -> GVec3<T> {
-        let r11 = T::cast(2.0)*(self.y()*self.z() + self.w()*self.x());
-        let r12 = self.w()*self.w() - self.x()*self.x() - self.y()*self.y() + self.z()*self.z();
-        let r21 = -T::cast(2.0)*(self.x()*self.z() - self.w()*self.y());
-        let r31 = T::cast(2.0)*(self.x()*self.y() + self.w()*self.z());
-        let r32 = self.w()*self.w() + self.x()*self.x() - self.y()*self.y() - self.z()*self.z();
+        let r11 = T::cast(2.0) * (self.y() * self.z() + self.w() * self.x());
+        let r12 = self.w() * self.w() - self.x() * self.x() - self.y() * self.y() + self.z() * self.z();
+        let r21 = T::cast(-2.0) * (self.x() * self.z() - self.w() * self.y());
+        let r31 = T::cast(2.0) * (self.x() * self.y() + self.w() * self.z());
+        let r32 = self.w() * self.w() + self.x() * self.x() - self.y() * self.y() - self.z() * self.z();
 
         // simple clamp
         let r21 = if r21 > T::one() { T::one() } else if r21 < -T::one() { -T::one() } else { r21 };
@@ -509,17 +506,15 @@ impl<T: Scalar> GQuat<T> {
 
     /// Convert this Quat into a scalar and Vec3 tuple. Scalar is radians around the Vec3 axis.
     pub fn to_angle_axis(&self) -> (T, GVec3<T>) {
-
         let angle = T::cast(2.0) * self.w().acos();
         let scale = (angle / T::cast(2.0)).sin();
 
         // if it's not pretty much zero
         if scale > T::cast(NEAR_ZERO)
         {
-            ( angle, GVec3::new(self.x() / scale, self.y() / scale, self.z() / scale) )
-        }
-        else {
-            ( T::zero(), GVec3::new(T::zero(), T::zero(), T::one()) )
+            (angle, GVec3::new(self.x() / scale, self.y() / scale, self.z() / scale))
+        } else {
+            (T::zero(), GVec3::new(T::zero(), T::zero(), T::one()))
         }
     }
 
@@ -552,17 +547,16 @@ impl<T: Scalar> std::ops::Mul<GQuat<T>> for GQuat<T> {
 
     /// Rotate a quaternion by another rotation
     fn mul(self, rhs: GQuat<T>) -> GQuat<T> {
-        GQuat ( [
+        GQuat([
             self.x() * rhs.w() + self.w() * rhs.x() + self.y() * rhs.z() - self.z() * rhs.y(), // x
             self.y() * rhs.w() + self.w() * rhs.y() + self.z() * rhs.x() - self.x() * rhs.z(), // y
             self.z() * rhs.w() + self.w() * rhs.z() + self.x() * rhs.y() - self.y() * rhs.x(), // z
             self.w() * rhs.w() - self.x() * rhs.x() - self.y() * rhs.y() - self.z() * rhs.z(), // w
-        ] ).normalize()
+        ]).normalize()
     }
 }
 
 impl<T: Scalar> std::ops::MulAssign<GQuat<T>> for GQuat<T> {
-
     /// Rotate a quaternion by another rotation
     fn mul_assign(&mut self, rhs: GQuat<T>) {
         *self = *self * rhs;
@@ -610,17 +604,16 @@ impl<T: Scalar> std::ops::Div<T> for GQuat<T> {
     /// Scale this quaternion, warning: likely to no longer be a unit quaternion after this
     fn div(self, rhs: T) -> GQuat<T> {
         if rhs == T::zero() { panic!("Cannot divide by zero. (GQuat<T> / 0.0)"); }
-        GQuat ( [
+        GQuat([
             self[0] / rhs,
             self[1] / rhs,
             self[2] / rhs,
             self[3] / rhs,
-        ] )
+        ])
     }
 }
 
 impl<T: Scalar> std::ops::DivAssign<T> for GQuat<T> {
-
     /// Scale this quaternion, warning: likely to no longer be a unit quaternion after this
     fn div_assign(&mut self, rhs: T) {
         // may not be a unit quaternion after this
@@ -667,7 +660,7 @@ impl<T: Scalar> From<GMat4<T>> for GQuat<T> {
         if tr > T::zero() {
             let s: T = (tr + T::one()).sqrt();
             let si: T = T::cast(0.5) / s;
-            GQuat ([
+            GQuat([
                 (m[6] - m[9]) * si,
                 (m[8] - m[2]) * si,
                 (m[1] - m[4]) * si,
@@ -684,16 +677,16 @@ impl<T: Scalar> From<GMat4<T>> for GQuat<T> {
 
             i = 0;
             if m[5] > m[0] { i = 1; }
-            if m[10] > m[(i,i)] { i = 2; }
+            if m[10] > m[(i, i)] { i = 2; }
             j = nxt[i];
             k = nxt[j];
-            let mut s: T = ((m[(i,i)] - (m[(j,j)] + m[(k,k)])) + T::one()).sqrt();
+            let mut s: T = ((m[(i, i)] - (m[(j, j)] + m[(k, k)])) + T::one()).sqrt();
             q[i] = s * T::cast(0.5);
             if s != T::zero() { s = T::cast(0.5) / s; }
-            q[3] = (m[(j,k)] - m[(k,j)]) * s;
-            q[j] = (m[(i,j)] + m[(j,i)]) * s;
-            q[k] = (m[(i,k)] + m[(k,i)]) * s;
-            GQuat ([ q[0], q[1], q[2], q[3] ])
+            q[3] = (m[(j, k)] - m[(k, j)]) * s;
+            q[j] = (m[(i, j)] + m[(j, i)]) * s;
+            q[k] = (m[(i, k)] + m[(k, i)]) * s;
+            GQuat([q[0], q[1], q[2], q[3]])
         }
     }
 }

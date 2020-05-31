@@ -6,8 +6,6 @@ pub(crate) mod mat4;
 pub(crate) mod quat;
 
 use vec3::GVec3;
-use vec4::GVec4;
-use mat3::GMat3;
 use mat4::GMat4;
 use quat::GQuat;
 use crate::traits::Scalar;
@@ -63,7 +61,7 @@ impl<T: Scalar> GMat4<T> {
         let wq = (right + left) / (right - left);
         let hq = (top + bottom) / (top - bottom);
         let q = -(far + near) / (far - near);
-        let qn = -T::cast(2.0) * (far * near) / (far - near);
+        let qn = T::cast(-2.0) * (far * near) / (far - near);
 
         GMat4::mat4([
             w, T::zero(), T::zero(), T::zero(),
@@ -110,7 +108,7 @@ impl<T: Scalar> GMat4<T> {
 
         let depth = far - near;
         let q = -(far + near) / depth;
-        let qn = -T::cast(2.0) * (far * near) / depth;
+        let qn = T::cast(-2.0) * (far * near) / depth;
 
         let w = (T::cast(2.0) * near / xy_max) / aspect;
         let h = T::cast(2.0) * near / xy_max;
@@ -157,7 +155,7 @@ impl<T: Scalar> GMat4<T> {
     pub fn perspective_infinite(fov_y: T, aspect: T, near: T) -> GMat4<T> {
         let xy_max = near * fov_y;
 
-        let qn = -T::cast(2.0) * near;
+        let qn = T::cast(-2.0) * near;
 
         let w = (T::cast(2.0) * near / xy_max) / aspect;
         let h = T::cast(2.0) * near / xy_max;
@@ -214,7 +212,7 @@ impl<T: Scalar> GMat4<T> {
 
         let w = T::cast(2.0) * w;
         let h = T::cast(2.0) * h;
-        let p = -T::cast(2.0) * p;
+        let p = T::cast(-2.0) * p;
 
         GMat4::mat4([
             w, T::zero(), T::zero(), T::zero(),

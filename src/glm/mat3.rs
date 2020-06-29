@@ -51,8 +51,6 @@ pub struct Mat3 ( pub(crate) [f32; 9] );
 
 impl Mat3 {
 
-
-
     /// Create a new Mat3 from three Vec3 columns
     pub fn new(col1: Vec3, col2: Vec3, col3: Vec3) -> Mat3 {
         Mat3 ( [
@@ -177,6 +175,33 @@ impl Mat3 {
             m[i] = if self[i] < min { min } else if self[i] > max { max } else { self[i] };
         }
         m
+    }
+
+    /// Receive a Mat3 with each component rounded down to the nearest integer
+    pub fn floor(&self) -> Mat3 {
+        let mut m = Mat3::zero();
+        for i in 0..9 {
+            m[i] = self[i].floor();
+        }
+        m
+    }
+
+    /// Receive a Mat3 with only the fractional portion of each component
+    pub fn fract(&self) -> Mat3 {
+        let mut m = Mat3::zero();
+        for i in 0..9 {
+            m[i] = self[i].fract();
+        }
+        m
+    }
+
+    /// Receive the transpose of this Mat3
+    pub fn transpose(&self) -> Mat3 {
+        Mat3::mat3([
+            self[0], self[3], self[6],
+            self[1], self[4], self[7],
+            self[2], self[5], self[8],
+        ])
     }
 }
 

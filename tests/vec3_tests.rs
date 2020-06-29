@@ -52,3 +52,13 @@ fn sub() {
 
     assert_eq!(-b, c);
 }
+
+#[test]
+fn refraction() {
+    let i = Vec3::all(1.5);
+    let n = Vec3::Y_AXIS;
+
+    println!("refraction: {}", i.refraction(n, 1.0));
+    println!("refraction: {}", i.refraction(n, 0.5));
+    // assert_eq!(Vec3::new(1.0, -1.0, 1.0), i.reflection(n));
+}

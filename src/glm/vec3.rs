@@ -1,5 +1,6 @@
+use std::fmt::{Display, Error, Formatter};
+
 use crate::{NEAR_ZERO, Vec4};
-use std::fmt::{Display, Formatter, Error};
 
 /** # Vec3 - 3 Dimensional Vector <f32>
 
@@ -147,13 +148,6 @@ impl Vec3 {
         ])
     }
 
-    /// Receive the *dot* product of this Vec3 and another Vec3
-    ///
-    /// This function is commutative
-    pub fn dot(&self, other: Vec3) -> f32 {
-        self[0] * other[0] + self[1] * other[1] + self[2] * other[2]
-    }
-
     /// Receive the *cross* product of this Vec3 and another Vec3
     ///
     /// This function is **not** commutative
@@ -163,6 +157,49 @@ impl Vec3 {
             self[2] * other[0] - self[0] * other[2],
             self[0] * other[1] - self[1] * other[0],
         ] )
+    }
+
+    /// Receive the *distance* from this Vec3 to another Vec3
+    pub fn distance(&self, other: Vec3) -> f32 {
+        let x = other[0] - self[0];
+        let y = other[1] - self[1];
+        let z = other[2] - self[2];
+        (x * x + y * y + z * z).sqrt()
+    }
+
+    /// Receive the *distance squared* from this Vec3 to another Vec3
+    ///
+    /// One less operation than [`distance()`](#method.into)
+    pub fn distance2(&self, other: Vec3) -> f32 {
+        let x = other[0] - self[0];
+        let y = other[1] - self[1];
+        let z = other[2] - self[2];
+        x * x + y * y + z * z
+    }
+
+    /// Receive the *dot* product of this Vec3 and another Vec3
+    ///
+    /// This function is commutative
+    pub fn dot(&self, other: Vec3) -> f32 {
+        self[0] * other[0] + self[1] * other[1] + self[2] * other[2]
+    }
+
+    /// Receive a Vec3 with each component rounded down to the nearest integer
+    pub fn floor(&self) -> Vec3 {
+        Vec3([
+            self[0].floor(),
+            self[1].floor(),
+            self[2].floor(),
+        ])
+    }
+
+    /// Receive a Vec3 with only the fractional portion of each component
+    pub fn fract(&self) -> Vec3 {
+        Vec3([
+            self[0].fract(),
+            self[1].fract(),
+            self[2].fract(),
+        ])
     }
 
     /// Receive the magnitude of this Vec3
@@ -221,9 +258,171 @@ impl Vec3 {
     pub fn is_perpendicular(&self, other: Vec3) -> bool {
         self.dot(other) < NEAR_ZERO
     }
+
+    /// Receive the *reflection* of this Vec3 across the surface represented by normal vector n
+    ///
+    /// ```
+    /// # use sawd_glm::Vec3;
+    /// let v = Vec3::all(1.0);
+    /// let n = Vec3::Y_AXIS;
+    /// assert_eq!(Vec3::new(1.0, -1.0, 1.0), v.reflection(n));
+    /// ```
+    pub fn reflection(self, n: Vec3) -> Vec3 {
+        self - n * (n.dot(self) * 2.0)
+    }
+
+    /// Receive the *refraction* of this Vec3 across the surface represented by normal vector n and
+    /// a refraction ratio
+    ///
+    /// ```
+    /// # use sawd_glm::Vec3;
+    /// let v = Vec3::all(1.5);
+    /// let n = Vec3::Y_AXIS;
+    /// assert_eq!(Vec3::new(0.75, -1.145644, 0.75), v.refraction(n, 0.5));
+    /// ```
+    pub fn refraction(self, n: Vec3, ratio: f32) -> Vec3 {
+        let ndot = n.dot(self);
+        let k = 1.0 - ratio * ratio * (1.0 - ndot * ndot);
+
+        if k < 0.0 {
+            Vec3::zero()
+        } else {
+            self * ratio - n * (ratio * ndot + k.sqrt())
+        }
+    }
 }
 
-vector_operations!(Vec3, { 0, 1, 2 } );
+impl std::ops::Index<usize> for Vec3 {
+    type Output = f32;
+
+    fn index(&self, index: usize) -> &f32 {
+        &self.0[index]
+    }
+}
+
+
+impl std::ops::IndexMut<usize> for Vec3 {
+    fn index_mut(&mut self, index: usize) -> &mut f32 {
+        &mut self.0[index]
+    }
+}
+
+impl std::ops::Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Vec3 {
+        Vec3([
+            -self.0[0],
+            -self.0[1],
+            -self.0[2],
+        ])
+    }
+}
+
+impl std::ops::Add for Vec3 {
+    type Output = Vec3;
+
+    fn add(self, other: Vec3) -> Vec3 {
+        Vec3 ( [
+            self.0[0] + other.0[0],
+            self.0[1] + other.0[1],
+            self.0[2] + other.0[2],
+        ] )
+    }
+}
+
+impl std::ops::AddAssign for Vec3 {
+    fn add_assign(&mut self, other: Vec3) {
+        self.0[0] += other.0[0];
+        self.0[1] += other.0[1];
+        self.0[2] += other.0[2];
+    }
+}
+
+impl std::ops::Sub for Vec3 {
+    type Output = Vec3;
+
+    fn sub(self, other: Vec3) -> Vec3 {
+        Vec3 ( [
+            self.0[0] - other.0[0],
+            self.0[1] - other.0[1],
+            self.0[2] - other.0[2],
+        ] )
+    }
+}
+
+impl std::ops::SubAssign for Vec3 {
+    fn sub_assign(&mut self, other: Vec3) {
+        self.0[0] -= other.0[0];
+        self.0[1] -= other.0[1];
+        self.0[2] -= other.0[2];
+    }
+}
+
+impl std::ops::Mul<f32> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: f32) -> Vec3 {
+        Vec3 ( [
+            self.0[0] * rhs,
+            self.0[1] * rhs,
+            self.0[2] * rhs,
+        ] )
+    }
+}
+
+impl std::ops::MulAssign<f32> for Vec3 {
+    fn mul_assign(&mut self, rhs: f32) {
+        self.0[0] *= rhs;
+        self.0[1] *= rhs;
+        self.0[2] *= rhs;
+    }
+}
+
+impl std::ops::Div<f32> for Vec3 {
+    type Output = Vec3;
+
+    fn div(self, rhs: f32) -> Vec3 {
+        if rhs == 0.0 { panic!("Cannot divide by zero. (Vec3 / 0.0)"); }
+        Vec3 ( [
+            self.0[0] / rhs,
+            self.0[1] / rhs,
+            self.0[2] / rhs,
+        ] )
+    }
+}
+
+impl std::ops::DivAssign<f32> for Vec3 {
+    fn div_assign(&mut self, rhs: f32) {
+        if rhs == 0.0 { panic!("Cannot divide by zero. (Vec3 / 0.0)"); }
+        self.0[0] /= rhs;
+        self.0[1] /= rhs;
+        self.0[2] /= rhs;
+    }
+}
+
+impl std::ops::Rem<f32> for Vec3 {
+    type Output = Vec3;
+
+    fn rem(self, rhs: f32) -> Vec3 {
+        if rhs == 0.0 { panic!("Cannot divide by zero. (Vec3 % 0.0)"); }
+        Vec3 ( [
+            self.0[0] % rhs,
+            self.0[1] % rhs,
+            self.0[2] % rhs,
+        ] )
+    }
+}
+
+impl std::ops::RemAssign<f32> for Vec3 {
+
+    fn rem_assign(&mut self, rhs: f32) {
+        if rhs == 0.0 { panic!("Cannot divide by zero. (Vec3 % 0.0)"); }
+        self.0[0] %= rhs;
+        self.0[1] %= rhs;
+        self.0[2] %= rhs;
+    }
+}
 
 impl Default for Vec3 {
 

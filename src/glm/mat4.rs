@@ -179,6 +179,34 @@ impl Mat4 {
         }
         m
     }
+
+    /// Receive a Mat4 with each component rounded down to the nearest integer
+    pub fn floor(&self) -> Mat4 {
+        let mut m = Mat4::zero();
+        for i in 0..16 {
+            m[i] = self[i].floor();
+        }
+        m
+    }
+
+    /// Receive a Mat4 with only the fractional portion of each component
+    pub fn fract(&self) -> Mat4 {
+        let mut m = Mat4::zero();
+        for i in 0..16 {
+            m[i] = self[i].fract();
+        }
+        m
+    }
+
+    /// Receive the transpose of this Mat4
+    pub fn transpose(&self) -> Mat4 {
+        Mat4::mat4([
+            self[0], self[4], self[8], self[12],
+            self[1], self[5], self[9], self[13],
+            self[2], self[6], self[10], self[14],
+            self[3], self[7], self[11], self[15],
+        ])
+    }
 }
 
 impl std::ops::Index<usize> for Mat4 {

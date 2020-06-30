@@ -177,6 +177,13 @@ impl Mat3 {
         m
     }
 
+    /// Receive the f32 determinant of this Mat3
+    pub fn determinant(&self) -> f32 {
+          self[0] * (self[4] * self[8] - self[7] * self[5])
+        - self[3] * (self[1] * self[8] - self[7] * self[2])
+        + self[6] * (self[1] * self[5] - self[4] * self[2])
+    }
+
     /// Receive a Mat3 with each component rounded down to the nearest integer
     pub fn floor(&self) -> Mat3 {
         let mut m = Mat3::zero();
@@ -193,6 +200,30 @@ impl Mat3 {
             m[i] = self[i].fract();
         }
         m
+    }
+
+    /// Attempt to receive `Some` inverse of this Mat3, or `None` if the determinant is 0
+    pub fn inverse(&self) -> Option<Mat3> {
+        let det = self.determinant();
+        if det == 0.0 {
+            None
+        } else {
+            Some(
+                Mat3::mat3([
+                    (self[4] * self[8] - self[5] * self[7]) / det,
+                    (self[7] * self[2] - self[8] * self[1]) / det,
+                    (self[1] * self[5] - self[2] * self[4]) / det,
+
+                    (self[5] * self[6] - self[3] * self[8]) / det,
+                    (self[8] * self[0] - self[6] * self[2]) / det,
+                    (self[2] * self[3] - self[0] * self[5]) / det,
+
+                    (self[3] * self[7] - self[4] * self[6]) / det,
+                    (self[6] * self[1] - self[7] * self[0]) / det,
+                    (self[0] * self[4] - self[1] * self[3]) / det,
+                ])
+            )
+        }
     }
 
     /// Receive the transpose of this Mat3

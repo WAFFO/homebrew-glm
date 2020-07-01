@@ -15,6 +15,21 @@ use std::fmt::{Display, Formatter, Error};
  [`Vec4::default()`](#method.default) is equivalent to [`Vec4::zero()`](#method.zero) and we
  recommend using that function instead to make your code more explicit.
 
+ #### Swizzling
+
+ Like the OpenGL GLM library, I've implemented sizzling for [`Vec3`](./struct.Vec3.html) and
+ [`Vec4`](./struct.Vec4.html). Sizzling lets you created new Vectors from the components of another
+ Vector.
+
+ ```
+ # use sawd_glm::{Vec3, Vec4};
+ let v = Vec4::new(1.0, 2.0, 3.0, 4.0);
+
+ assert_eq!(Vec3::new(1.0, 1.0, 1.0), v.xxx());
+ assert_eq!(Vec3::new(3.0, 2.0, 1.0), v.zyx());
+ assert_eq!(Vec4::new(4.0, 3.0, 2.0, 1.0), v.wzyx());
+ ```
+
 */
 
 #[derive(Debug, Copy, Clone, PartialEq)]
@@ -89,9 +104,6 @@ impl Vec4 {
 
     /// Receive the mutable reference for w
     pub fn w_mut(&mut self) -> &mut f32 { &mut self.0[3] }
-
-    /// Receive a Vec3 made up of the x, y, z components
-    pub fn xyz(&self) -> Vec3 { Vec3([self[0], self[1], self[2]]) }
 
     /// Test if this Vec4 is equals to another Vec4 for each component up to an epsilon of 1e-6
     pub fn equals(&self, other: Vec4) -> bool {
@@ -258,6 +270,8 @@ impl Vec4 {
     pub fn is_perpendicular(&self, other: Vec4) -> bool {
         self.dot(other) < NEAR_ZERO
     }
+
+    vector_swizzle_4!();
 }
 
 impl From<Vec3> for Vec4 {

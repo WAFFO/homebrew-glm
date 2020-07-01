@@ -1,6 +1,6 @@
 extern crate sawd_glm;
 
-use sawd_glm::Vec3;
+use sawd_glm::{Vec3, Vec4};
 
 #[test]
 fn index() {
@@ -61,4 +61,16 @@ fn refraction() {
     println!("refraction: {}", i.refraction(n, 1.0));
     println!("refraction: {}", i.refraction(n, 0.5));
     // assert_eq!(Vec3::new(1.0, -1.0, 1.0), i.reflection(n));
+}
+
+#[test]
+fn swizzle() {
+    let v = Vec3::new(1.0, 2.0, 3.0);
+
+    assert_eq!(Vec3::new(1.0, 1.0, 1.0), v.xxx());
+    assert_eq!(Vec3::new(3.0, 2.0, 1.0), v.zyx());
+    assert_eq!(v, v.xyz());
+
+    assert_eq!(Vec4::new(1.0, 1.0, 1.0, 1.0), v.xxxx());
+    assert_eq!(Vec4::new(3.0, 2.0, 3.0, 1.0), v.zyzx());
 }

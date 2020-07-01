@@ -13,7 +13,22 @@ use crate::{NEAR_ZERO, Vec4};
  components to implement Default.
 
  [`Vec3::default()`](#method.default) is equivalent to [`Vec3::zero()`](#method.zero) and we
- recommend using that function instead to make your code more explicit.
+ recommend using the zero function instead to make your code more explicit.
+
+ #### Swizzling
+
+ Like the OpenGL GLM library, I've implemented sizzling for [`Vec3`](./struct.Vec3.html) and
+ [`Vec4`](./struct.Vec4.html). Sizzling lets you created new Vectors from the components of another
+ Vector.
+
+ ```
+ # use sawd_glm::{Vec3, Vec4};
+ let v = Vec3::new(1.0, 2.0, 3.0);
+
+ assert_eq!(Vec3::new(1.0, 1.0, 1.0), v.xxx());
+ assert_eq!(Vec3::new(3.0, 2.0, 1.0), v.zyx());
+ assert_eq!(Vec4::new(1.0, 3.0, 2.0, 1.0), v.xzyx());
+ ```
 
 */
 
@@ -290,6 +305,8 @@ impl Vec3 {
             self * ratio - n * (ratio * ndot + k.sqrt())
         }
     }
+
+    vector_swizzle_3!();
 }
 
 impl std::ops::Index<usize> for Vec3 {
@@ -460,4 +477,9 @@ impl Display for Vec3 {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "<{}, {}, {}>", self.x(), self.y(), self.z())
     }
+}
+
+impl From<[f32;3]> for Vec3{
+    /// Create a Vec3 from an array
+    fn from(f: [f32;3]) -> Vec3 { Vec3 ( [f[0], f[1], f[2]] ) }
 }

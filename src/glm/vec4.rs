@@ -93,7 +93,7 @@ impl Vec4 {
     /// Receive a Vec3 made up of the x, y, z components
     pub fn xyz(&self) -> Vec3 { Vec3([self[0], self[1], self[2]]) }
 
-    /// Test if this Vec4 is equals to another Vec4 for each component up to 1e-6
+    /// Test if this Vec4 is equals to another Vec4 for each component up to an epsilon of 1e-6
     pub fn equals(&self, other: Vec4) -> bool {
         self.equals_epsilon(other, NEAR_ZERO)
     }

@@ -81,7 +81,7 @@ impl Vec3 {
     /// Create a Vec4 with a value for w
     pub fn vec4(&self, w: f32) -> Vec4 { Vec4::vec3_w(*self, w) }
 
-    /// Test if this Vec3 is equals to another Vec3 for each component up to 1e-6
+    /// Test if this Vec3 is equals to another Vec3 for each component up to an epsilon of 1e-6
     pub fn equals(&self, other: Vec3) -> bool {
         self.equals_epsilon(other, NEAR_ZERO)
     }

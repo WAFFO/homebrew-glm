@@ -1,4 +1,4 @@
-use crate::{Vec4, Mat3, NEAR_ZERO};
+use crate::{Mat3, NEAR_ZERO, Vec4};
 
 /** # Mat4 - 4x4 Matrix <f32>
 
@@ -96,7 +96,7 @@ impl Mat4 {
         &mut self[(col, row)]
     }
 
-    /// Test if this Mat4 is equals to another Mat4 for each component up to 1e-6
+    /// Test if this Mat4 is equals to another Mat4 for each component up to an epsilon of 1e-6
     pub fn equals(&self, other: Mat4) -> bool {
         self.equals_epsilon(other, NEAR_ZERO)
     }
@@ -217,7 +217,7 @@ impl Mat4 {
         m
     }
 
-    /// Attempt to receive `Some` inverse of this Mat3, or `None` if the determinant is 0
+    /// Attempt to receive `Some` inverse of this Mat4, or `None` if the determinant is 0
     pub fn inverse(&self) -> Option<Mat4> {
         let s0 = self[0] * self[5] - self[4] * self[1];
         let s1 = self[0] * self[6] - self[4] * self[2];

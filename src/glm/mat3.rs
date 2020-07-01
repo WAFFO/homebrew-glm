@@ -94,7 +94,7 @@ impl Mat3 {
         &mut self[(col, row)]
     }
 
-    /// Test if this Mat3 is equals to another Mat3 for each component up to 1e-6
+    /// Test if this Mat3 is equals to another Mat3 for each component up to an epsilon of 1e-6
     pub fn equals(&self, other: Mat3) -> bool {
         self.equals_epsilon(other, NEAR_ZERO)
     }

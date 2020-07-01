@@ -45,3 +45,17 @@ fn mul(){
     assert_eq!(a * b * c, r2);
     assert_eq!(a * v, r3);
 }
+
+#[test]
+fn inverse() {
+    let mat = Mat4::mat4([
+        1.0, 2.0, 3.0, 0.0,
+        4.0, 1.0, 6.0, 0.0,
+        7.0, 8.0, 1.0, 0.0,
+        0.0, 0.5, 0.0, 1.0,
+    ]);
+
+    let inv = mat.inverse().unwrap();
+
+    assert!(Mat4::identity().equals(mat * inv));
+}

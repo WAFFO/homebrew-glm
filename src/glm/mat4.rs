@@ -180,6 +180,25 @@ impl Mat4 {
         m
     }
 
+    /// Receive the f32 determinant of this Mat4
+    pub fn determinant(&self) -> f32 {
+        let s0 = self[0] * self[5] - self[4] * self[1];
+        let s1 = self[0] * self[6] - self[4] * self[2];
+        let s2 = self[0] * self[7] - self[4] * self[3];
+        let s3 = self[1] * self[6] - self[5] * self[2];
+        let s4 = self[1] * self[7] - self[5] * self[3];
+        let s5 = self[2] * self[7] - self[6] * self[3];
+
+        let c0 = self[8] * self[13] - self[12] * self[9];
+        let c1 = self[8] * self[14] - self[12] * self[10];
+        let c2 = self[8] * self[15] - self[12] * self[11];
+        let c3 = self[9] * self[14] - self[13] * self[10];
+        let c4 = self[9] * self[15] - self[13] * self[11];
+        let c5 = self[10] * self[15] - self[14] * self[11];
+
+        s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0
+    }
+
     /// Receive a Mat4 with each component rounded down to the nearest integer
     pub fn floor(&self) -> Mat4 {
         let mut m = Mat4::zero();
@@ -196,6 +215,55 @@ impl Mat4 {
             m[i] = self[i].fract();
         }
         m
+    }
+
+    /// Attempt to receive `Some` inverse of this Mat3, or `None` if the determinant is 0
+    pub fn inverse(&self) -> Option<Mat4> {
+        let s0 = self[0] * self[5] - self[4] * self[1];
+        let s1 = self[0] * self[6] - self[4] * self[2];
+        let s2 = self[0] * self[7] - self[4] * self[3];
+        let s3 = self[1] * self[6] - self[5] * self[2];
+        let s4 = self[1] * self[7] - self[5] * self[3];
+        let s5 = self[2] * self[7] - self[6] * self[3];
+
+        let c0 = self[8] * self[13] - self[12] * self[9];
+        let c1 = self[8] * self[14] - self[12] * self[10];
+        let c2 = self[8] * self[15] - self[12] * self[11];
+        let c3 = self[9] * self[14] - self[13] * self[10];
+        let c4 = self[9] * self[15] - self[13] * self[11];
+        let c5 = self[10] * self[15] - self[14] * self[11];
+
+        let det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
+
+        if det == 0.0 {
+            None
+        }
+        else {
+            let det = 1.0 / det;
+            Some(
+                Mat4([
+                    ( self[5]  * c5 - self[6]  * c4 + self[7]  * c3) * det,
+                    (-self[1]  * c5 + self[2]  * c4 - self[3]  * c3) * det,
+                    ( self[13] * s5 - self[14] * s4 + self[15] * s3) * det,
+                    (-self[9]  * s5 + self[10] * s4 - self[11] * s3) * det,
+
+                    (-self[4]  * c5 + self[6]  * c2 - self[7]  * c1) * det,
+                    ( self[0]  * c5 - self[2]  * c2 + self[3]  * c1) * det,
+                    (-self[12] * s5 + self[14] * s2 - self[15] * s1) * det,
+                    ( self[8]  * s5 - self[10] * s2 + self[11] * s1) * det,
+
+                    ( self[4]  * c4 - self[5]  * c2 + self[7]  * c0) * det,
+                    (-self[0]  * c4 + self[1]  * c2 - self[3]  * c0) * det,
+                    ( self[12] * s4 - self[13] * s2 + self[15] * s0) * det,
+                    (-self[8]  * s4 + self[9]  * s2 - self[11] * s0) * det,
+
+                    (-self[4]  * c3 + self[5]  * c1 - self[6]  * c0) * det,
+                    ( self[0]  * c3 - self[1]  * c1 + self[2]  * c0) * det,
+                    (-self[12] * s3 + self[13] * s1 - self[14] * s0) * det,
+                    ( self[8]  * s3 - self[9]  * s1 + self[10] * s0) * det,
+                ])
+            )
+        }
     }
 
     /// Receive the transpose of this Mat4

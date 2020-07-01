@@ -1,5 +1,6 @@
 
 #[doc(hidden)]
+#[allow(unused_macros)]
 macro_rules! vector_operations {
     ( $VecN:ident, { $($i:expr),+ } ) => {
         impl std::ops::Index<usize> for $VecN {

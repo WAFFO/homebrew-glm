@@ -207,20 +207,22 @@ impl Mat3 {
         let det = self.determinant();
         if det == 0.0 {
             None
-        } else {
+        }
+        else {
+            let det = 1.0 / det;
             Some(
                 Mat3::mat3([
-                    (self[4] * self[8] - self[5] * self[7]) / det,
-                    (self[7] * self[2] - self[8] * self[1]) / det,
-                    (self[1] * self[5] - self[2] * self[4]) / det,
+                    (self[4] * self[8] - self[5] * self[7]) * det,
+                    (self[7] * self[2] - self[8] * self[1]) * det,
+                    (self[1] * self[5] - self[2] * self[4]) * det,
 
-                    (self[5] * self[6] - self[3] * self[8]) / det,
-                    (self[8] * self[0] - self[6] * self[2]) / det,
-                    (self[2] * self[3] - self[0] * self[5]) / det,
+                    (self[5] * self[6] - self[3] * self[8]) * det,
+                    (self[8] * self[0] - self[6] * self[2]) * det,
+                    (self[2] * self[3] - self[0] * self[5]) * det,
 
-                    (self[3] * self[7] - self[4] * self[6]) / det,
-                    (self[6] * self[1] - self[7] * self[0]) / det,
-                    (self[0] * self[4] - self[1] * self[3]) / det,
+                    (self[3] * self[7] - self[4] * self[6]) * det,
+                    (self[6] * self[1] - self[7] * self[0]) * det,
+                    (self[0] * self[4] - self[1] * self[3]) * det,
                 ])
             )
         }

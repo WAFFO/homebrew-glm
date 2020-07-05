@@ -22,28 +22,28 @@ macro_rules! assert_eq_float {
     }
 }
 
-/// Create a new Vec3 with x, y, z components
+/// Create a new [`Vec3`](./struct.Vec3.html) with x, y, z components
 ///
 /// May also use [`Vec3::new(x, y, z)`](./struct.Vec3.html#method.new)
 pub fn vec3(x: f32, y: f32, z: f32) -> Vec3 {
     Vec3::new(x, y, z)
 }
 
-/// Create a new Vec4 with x, y, z, w components
+/// Create a new [`Vec4`](./struct.Vec4.html) with x, y, z, w components
 ///
 /// May also use [`Vec4::new(x, y, z, w)`](./struct.Vec4.html#method.new)
 pub fn vec4(x: f32, y: f32, z: f32, w: f32) -> Vec4 {
     Vec4::new(x, y, z, w)
 }
 
-/// Create a new Mat3 with 3 Vec3 columns
+/// Create a new [`Mat3`](./struct.Mat3.html) with 3 [`Vec3`](./struct.Vec3.html) columns
 ///
 /// May also use [`Mat3::new(col1, col2, col3)`](./struct.Mat3.html#method.new)
 pub fn mat3(col1: Vec3, col2: Vec3, col3: Vec3) -> Mat3 {
     Mat3::new(col1, col2, col3)
 }
 
-/// Create a new Mat4 with 4 Vec4 columns
+/// Create a new [`Mat4`](./struct.Mat4.html) with 4 [`Vec4`](./struct.Vec4.html) columns
 ///
 /// May also use [`Mat4::new(col1, col2, col3, col4)`](./struct.Mat4.html#method.new)
 pub fn mat4(col1: Vec4, col2: Vec4, col3: Vec4, col4: Vec4) -> Mat4 {
@@ -536,7 +536,7 @@ pub fn rotate_z(f: f32) -> Mat4 {
 
 /// Build a *Scale Matrix* that transforms vectors in the world space
 ///
-/// - `s`: Vec3 representing the scale of the model on each axis
+/// - `s`: [`Vec3`](./struct.Vec3.html) representing the scale of the model on each axis
 ///
 /// ## Where is this typically used?
 ///
@@ -578,4 +578,30 @@ pub fn scale(s: Vec3) -> Mat4 {
         0.0,  0.0, s[2], 0.0,
         0.0,  0.0,  0.0, 1.0,
     ])
+}
+
+
+/// Receive the normal vector of the triangle created by three [`Vec3`](./struct.Vec3.html) points
+///
+/// The order of the points will affect which face of the triangle the normal will be pointing out
+/// from.
+///
+/// Take the below example, the normal is positive Z or negative Z depending on the order of the
+/// points. The normal will always point from the side of the triangle in which the points are
+/// listed in a counter clockwise order.
+///
+/// ```
+/// # use sawd_glm::{Vec3, triangle_normal};
+/// let p1 = Vec3::new(-1.0, -1.0, 0.0);
+/// let p2 = Vec3::new(1.0, 0.0, 0.0);
+/// let p3 = Vec3::new(0.0, 1.0, 0.0);
+///
+/// assert_eq!(Vec3::new(0.0, 0.0, 1.0), triangle_normal(p1, p2, p3));
+/// assert_eq!(Vec3::new(0.0, 0.0, -1.0), triangle_normal(p1, p3, p2));
+/// ```
+pub fn triangle_normal(p1: Vec3, p2: Vec3, p3: Vec3) -> Vec3 {
+    let u = p2 - p1;
+    let v = p3 - p1;
+
+    u.cross(v).normalize()
 }

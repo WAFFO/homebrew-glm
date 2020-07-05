@@ -184,7 +184,7 @@ impl Vec3 {
 
     /// Receive the *distance squared* from this Vec3 to another Vec3
     ///
-    /// One less operation than [`distance()`](#method.into)
+    /// One less operation than [`distance()`](#method.into), useful for general comparisons.
     pub fn distance2(&self, other: Vec3) -> f32 {
         let x = other[0] - self[0];
         let y = other[1] - self[1];
@@ -217,17 +217,35 @@ impl Vec3 {
         ])
     }
 
-    /// Receive the magnitude of this Vec3
+    /// Receive the *length* of this Vec3
     ///
-    /// This function is equivalent to [`length()`](#method.length)
-    pub fn mag(&self) -> f32 { (
-        self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
-    ).sqrt() }
+    /// This function is one operation more than [`length2()`](#method.length2)
+    pub fn length(&self) -> f32 {
+        (self.x() * self.x() + self.y() * self.y() + self.z() * self.z()).sqrt()
+    }
 
-    /// Receive the length of this Vec3
+    /// Receive the *length squared* of this Vec3
     ///
-    /// This function is equivalent to [`mag()`](#method.mag)
-    pub fn length(&self) -> f32 { self.mag() }
+    /// This function is one operation less than [`length()`](#method.length), useful for general
+    /// comparisons
+    pub fn length2(&self) -> f32 {
+        self.x() * self.x() + self.y() * self.y() + self.z() * self.z()
+    }
+
+    /// Receive the *linear interpolation* from this Vec3 to another Vec3 along a scalar
+    pub fn lerp(self, to: Vec3, scalar: f32) -> Vec3 {
+        (1.0 - scalar) * self + scalar * to
+    }
+
+    /// Receive the *linear interpolation* from this Vec3 to another Vec3 along a scalar
+    /// component-wise
+    pub fn lerp_vec_scale(&self, to: Vec3, scalar: Vec3) -> Vec3 {
+        Vec3([
+            (1.0 - scalar.0[0]) * self.0[0] + scalar.0[0] * to.0[0],
+            (1.0 - scalar.0[1]) * self.0[1] + scalar.0[1] * to.0[1],
+            (1.0 - scalar.0[2]) * self.0[2] + scalar.0[2] * to.0[2],
+        ])
+    }
 
     /// Receive a normalization of Vec3
     ///
@@ -237,7 +255,7 @@ impl Vec3 {
     /// assert_eq_float!(1.0, v.length());
     /// ```
     pub fn normalize(&self) -> Vec3 {
-        let mag = self.mag();
+        let mag = self.length();
         if mag != 0.0 {
             *self / mag
         }
@@ -385,6 +403,14 @@ impl std::ops::Mul<f32> for Vec3 {
             self.0[1] * rhs,
             self.0[2] * rhs,
         ] )
+    }
+}
+
+impl std::ops::Mul<Vec3> for f32 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Vec3 {
+        rhs * self
     }
 }
 

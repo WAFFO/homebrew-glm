@@ -220,17 +220,37 @@ impl Vec4 {
         ])
     }
 
-    /// Receive the magnitude of this Vec4
+    /// Receive the *length* of this Vec4
     ///
-    /// This function is equivalent to [`length()`](#method.length)
-    pub fn mag(&self) -> f32 { (
-        self.x() * self.x() + self.y() * self.y() + self.z() * self.z() + self.w() * self.w()
-    ).sqrt() }
+    /// This function is one operation more than [`length2()`](#method.length2)
+    pub fn length(&self) -> f32 {
+        (self.x() * self.x() + self.y() * self.y() + self.z() * self.z() + self.w() * self.w())
+            .sqrt()
+    }
 
-    /// Receive the length of this Vec4
+    /// Receive the *length squared* of this Vec4
     ///
-    /// This function is equivalent to [`mag()`](#method.mag)
-    pub fn length(&self) -> f32 { self.mag() }
+    /// This function is one operation less than [`length()`](#method.length), useful for general
+    /// comparisons
+    pub fn length2(&self) -> f32 {
+        self.x() * self.x() + self.y() * self.y() + self.z() * self.z() + self.w() * self.w()
+    }
+
+    /// Receive the *linear interpolation* from this Vec4 to another Vec4 along a scalar
+    pub fn lerp(self, to: Vec4, scalar: f32) -> Vec4 {
+        (1.0 - scalar) * self + scalar * to
+    }
+
+    /// Receive the *linear interpolation* from this Vec4 to another Vec4 along a scalar
+    /// component-wise
+    pub fn lerp_vec_scale(&self, to: Vec4, scalar: Vec4) -> Vec4 {
+        Vec4([
+            (1.0 - scalar.0[0]) * self.0[0] + scalar.0[0] * to.0[0],
+            (1.0 - scalar.0[1]) * self.0[1] + scalar.0[1] * to.0[1],
+            (1.0 - scalar.0[2]) * self.0[2] + scalar.0[2] * to.0[2],
+            (1.0 - scalar.0[3]) * self.0[3] + scalar.0[3] * to.0[3],
+        ])
+    }
 
     /// Receive a normalization of Vec4
     ///
@@ -240,7 +260,7 @@ impl Vec4 {
     /// assert_eq_float!(1.0, v.length());
     /// ```
     pub fn normalize(&self) -> Vec4 {
-        let mag = self.mag();
+        let mag = self.length();
         if mag != 0.0 {
             *self / mag
         }
@@ -368,6 +388,14 @@ impl std::ops::Mul<f32> for Vec4 {
             self.0[2] * rhs,
             self.0[3] * rhs,
         ] )
+    }
+}
+
+impl std::ops::Mul<Vec4> for f32 {
+    type Output = Vec4;
+
+    fn mul(self, rhs: Vec4) -> Vec4 {
+        rhs * self
     }
 }
 

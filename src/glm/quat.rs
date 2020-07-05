@@ -208,14 +208,7 @@ impl Quat {
     }
 
     /// Receive the magnitude of this Quat, should always be 1.0
-    ///
-    /// This function is equivalent to [`length()`](#method.length)
-    pub fn mag(&self) -> f32 { ( self[0].powi(2) + self[1].powi(2) + self[2].powi(2) + self[3].powi(2) ).sqrt() }
-
-    /// Receive the length of this Quat, should always be 1.0
-    ///
-    /// This function is equivalent to [`mag()`](#method.mag)
-    pub fn length(&self) -> f32 { self.mag() }
+    pub fn length(&self) -> f32 { ( self[0].powi(2) + self[1].powi(2) + self[2].powi(2) + self[3].powi(2) ).sqrt() }
 
     /// Receive a normalization of this Quat
     ///
@@ -225,7 +218,7 @@ impl Quat {
     /// assert_eq_float!(1.0, v.length());
     /// ```
     pub fn normalize(&self) -> Quat {
-        let mag = self.mag();
+        let mag = self.length();
         if mag != 0.0 {
             *self / mag
         }
